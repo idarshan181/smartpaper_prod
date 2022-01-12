@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import CustomPaper from "../styles/CustomPaper";
-import { CustomInput, CustomLabel } from "../styles/CustomForm";
+import { CustomButton, CustomInput, CustomLabel } from "../styles/CustomForm";
 import {
   Box,
   Button,
@@ -37,6 +37,7 @@ export default function CheckTest() {
     isDisabled: true,
     isClearDisabled: true,
     tests: [],
+    inputImage: createRef(),
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     testName: "",
@@ -46,30 +47,67 @@ export default function CheckTest() {
     setState((prevState) => ({
       ...prevState,
       imageAdded: false,
-      resultFe: false,
+      resultFetched: false,
       imageLabel: "",
       isDisabled: true,
       isClearDisabled: true,
     }));
     const { files } = e.target;
-    const fileList = Object.values(files);
+    if (files.length === 0) {
+      setState((prevState) => ({
+        ...prevState,
+        testImages: [],
+        imageLabel: "",
+        imageAdded: false,
+        imageSource: [],
+        isDisabled: true,
+        isClearDisabled: true,
+      }));
+    } else {
+      const fileList = Object.values(files);
 
-    const source = await Promise.all(
-      fileList.map(async (file) => URL.createObjectURL(file))
-    );
+      const source = await Promise.all(
+        fileList.map(async (file) => URL.createObjectURL(file))
+      );
 
-    /* const source = await Promise.all(
+      /* const source = await Promise.all(
       fileList.map(async (file) => encodeImageFileAsURL(file).then(res => res))
     ) */
+      setState((prevState) => ({
+        ...prevState,
+        testImages: [...prevState.testImages, files[0]],
+        imageAdded: true,
+        resultFetched: false,
+        imageSource: [...prevState.imageSource, ...source],
+        imageLabel: "Your Work",
+        isDisabled: false,
+        isClearDisabled: false,
+      }));
+    }
+  };
+  const resetData = (e) => {
+    e.preventDefault();
+    // document.getElementById("image-input").value = "";
+    resetForm();
+    state.inputImage.current.value = "";
     setState((prevState) => ({
       ...prevState,
-      testImages: [...prevState.testImages, files[0]],
-      imageAdded: true,
+      testImages: [],
+      imageLabel: "",
+      imageAdded: false,
+      imageSource: [],
+      isDisabled: true,
+      isClearDisabled: true,
       resultFetched: false,
-      imageSource: [...prevState.imageSource, ...source],
-      imageLabel: "Your Work",
-      isDisabled: false,
-      isClearDisabled: false,
+      isError: false,
+      errorMessage: "",
+      result: {
+        correct: 0,
+        incorrect: 0,
+        percentage: 0,
+      },
+      loading: false,
+      loadingMessage: "",
     }));
   };
   const handleSubmit = (e) => {
@@ -124,6 +162,7 @@ export default function CheckTest() {
         component="form"
         sx={{ display: "flex", flexDirection: "column" }}
         onSubmit={handleSubmit}
+        onReset={resetData}
       >
         {/* <CustomLabel label={`Select your assessment`} id="testName" /> */}
         <CustomLabel id="testNameLabel" htmlFor="testName">
@@ -168,6 +207,7 @@ export default function CheckTest() {
           <b>Select photo(s)</b>
         </CustomLabel>
         <CustomFileInput
+          ref={state.inputImage}
           type="file"
           accept="image/*"
           id="testImages"
@@ -185,11 +225,49 @@ export default function CheckTest() {
             Upload
           </Button>
         </CustomLabel> */}
+        <CustomButton
+          type="submit"
+          fullWidth
+          variant="contained"
+          disabled={!(state.testImages.length > 0 && inputs.testName)}
+          sx={{
+            width: "200px",
+            height: "50px",
+            fontSize: "18px",
+            lineHeight: "20px",
+            textTransform: "none",
+            alignSelf: "center",
+            borderRadius: "8px",
+          }}
+        >
+          Submit
+        </CustomButton>
+        <Button
+          type="reset"
+          disabled={state.isClearDisabled}
+          variant="outlined"
+          color="error"
+          fullWidth
+          sx={{
+            width: "200px",
+            height: "50px",
+            fontSize: "18px",
+            lineHeight: "20px",
+            textTransform: "none",
+            alignSelf: "center",
+            mt: "8px",
+            mb: "8px",
+            borderRadius: "8px",
+            color: "theme.palette.error.main",
+          }}
+        >
+          Clear Data
+        </Button>
       </Box>
       {state.imageAdded ? (
         <ImageViewer>
           {state.imageLabel !== "" ? (
-            <Typography htmlFor="output" className="output-label">
+            <Typography htmlFor="output" className="outputLabel">
               {state.imageLabel}
             </Typography>
           ) : (
@@ -201,11 +279,12 @@ export default function CheckTest() {
               alt={`Your Work - ${index}`}
               id="output"
               key={index}
-              quality={100}
               loading="lazy"
+              width="100%"
+              height="100%"
               layout="responsive"
-              width={300}
-              className="output-image"
+              objectFit="contain"
+              className="outputImage"
             />
           ))}
         </ImageViewer>
