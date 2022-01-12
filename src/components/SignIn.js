@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
-import { CustomButton } from "../styles/CustomForm";
+import { CustomButton, CustomLabel } from "../styles/CustomForm";
 const CustomPaper = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   textAlign: "center",
@@ -23,7 +23,7 @@ const CustomPaper = styled(Paper)(({ theme }) => ({
   borderRadius: "10px",
   lineHeight: "60px",
   fontSize: "1.6rem",
-  padding: "1.8rem",
+  padding: "1rem 1.8rem 1.8rem 1.8rem",
 }));
 
 const CustomInput = styled(InputBase)(({ theme }) => ({
@@ -117,10 +117,26 @@ export default function SignIn() {
             fontWeight: "bold",
           }}
         >
-          Sign In
+          Smart Paper
         </Typography>
         <CustomPaper elevation={3}>
           <Box component="form" onSubmit={handleSubmit}>
+            <Typography
+              component="h4"
+              variant="h4"
+              gutterBottom
+              sx={{
+                alignSelf: "center",
+                fontWeight: "600",
+                margin: "0 8px 10px 8px",
+                padding: 0,
+                fontSize: "16px",
+                lineHeight: "20px",
+                color: "#000000",
+              }}
+            >
+              Details
+            </Typography>
             <InputLabel
               htmlFor="orgName"
               sx={{
@@ -128,9 +144,9 @@ export default function SignIn() {
                 textAlign: "left",
                 color: "#000000",
                 fontWeight: "bold",
-                fontFamily: 'Open Sans',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                fontFamily: "Open Sans",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               Organization Name
@@ -159,6 +175,21 @@ export default function SignIn() {
             </CustomButton>
           </Box>
         </CustomPaper>
+        {/* <Typography
+          variant="h6"
+          component="h6"
+          gutterBottom
+          sx={{
+            border: "1px solid #25a5df",
+            borderRadius: "8px",
+            padding: "8px",
+            width: "350px",
+            textAlign: "center",
+            color: "#25a5df",
+          }}
+        >
+          Sample Info Text
+        </Typography> */}
       </Box>
     </Container>
   );
