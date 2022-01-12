@@ -6,7 +6,7 @@ const CustomPaper = styled(Paper)(({ theme }) => ({
   textAlign: "left",
   color: theme.palette.text.primary,
   width: "400px",
-  margin: "8em auto 1em auto",
+  margin: "2em auto 1em auto",
   boxShadow: "2px 5px 20px rgba(0, 0, 0, 0.1)",
   borderRadius: "10px",
   lineHeight: "60px",
