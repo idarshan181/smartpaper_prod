@@ -1,5 +1,6 @@
-import { Alert, AlertTitle } from "@mui/material";
-import PropTypes from "prop-types";
+import { Alert, AlertTitle, Box } from '@mui/material';
+import PropTypes from 'prop-types';
+
 const ErrorMessage = ({ error }) => {
   if (!error || !error.message) return null;
   if (
@@ -11,27 +12,36 @@ const ErrorMessage = ({ error }) => {
       <Alert variant="outlined" key={i} severity="error">
         <AlertTitle>Error!</AlertTitle>
         <p data-test="graphql-error">
-          {error.message.replace("GraphQL error: ", "")}
+          {error.message.replace('GraphQL error: ', '')}
         </p>
       </Alert>
     ));
   }
   return (
-    <Alert variant="outlined" severity="error">
-      <AlertTitle>Error!</AlertTitle>
-      <p data-test="graphql-error">
-        {error.message.replace("GraphQL error: ", "")}
-      </p>
-    </Alert>
+    <Box sx={{ mb: 2 }}>
+      <Alert variant="outlined" severity="error">
+        <AlertTitle>Error!</AlertTitle>
+        <p
+          data-test="graphql-error"
+          style={{
+            fontSize: '12px',
+            margin: '0',
+            fontWeight: '300'
+          }}
+        >
+          {error.message.replace('GraphQL error: ', '')}
+        </p>
+      </Alert>
+    </Box>
   );
 };
 
 ErrorMessage.defaultProps = {
-  error: {},
+  error: {}
 };
 
 ErrorMessage.propTypes = {
-  error: PropTypes.object,
+  error: PropTypes.object
 };
 
 export default ErrorMessage;

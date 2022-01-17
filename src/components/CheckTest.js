@@ -1,36 +1,42 @@
-import { createRef, useEffect, useState } from "react";
-import CustomPaper from "../styles/CustomPaper";
-import { CustomButton, CustomInput, CustomLabel } from "../styles/CustomForm";
+import { createRef, useEffect, useState } from 'react';
+import CustomPaper from '../styles/CustomPaper';
+import { CustomButton, CustomInput, CustomLabel } from '../styles/CustomForm';
+import Loader from './Loader';
 import {
   Box,
   Button,
   FormControl,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
-  Typography,
-} from "@mui/material";
-import useForm from "../lib/useForm";
-import { CustomFileInput } from "../styles/CustomFileInput";
-import { useRouter } from "next/router";
-import axios from "axios";
-import ImageViewer from "../styles/ImageViewer";
-import Image from "next/image";
+  Typography
+} from '@mui/material';
+import useForm from '../lib/useForm';
+import { CustomFileInput } from '../styles/CustomFileInput';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import ImageViewer from '../styles/ImageViewer';
+import Image from 'next/image';
+import ErrorMessage from './ErrorMessage';
+import { getScanResult } from '../lib/api';
 export default function CheckTest() {
   const [state, setState] = useState({
-    orgName: "",
-    imageLabel: "",
+    orgName: '',
+    imageLabel: '',
     imageSource: [],
     imageAdded: false,
     loading: false,
-    loadingMessage: "",
+    loadingMessage: '',
     isError: false,
-    errorMessage: "",
+    error: {
+      message: ''
+    },
     resultFetched: false,
     result: {
       correct: 0,
       incorrect: 0,
-      percentage: 0,
+      percentage: 0
     },
     studentResult: [],
     testImages: [],
@@ -38,135 +44,224 @@ export default function CheckTest() {
     isClearDisabled: true,
     tests: [],
     inputImage: createRef(),
+    formLoading: false
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
-    testName: "",
-    version: "v1",
+    testName: '',
+    version: 'v1'
   });
-  const handleFileChange = async (e) => {
-    setState((prevState) => ({
+  const handleFileChange = async e => {
+    setState(prevState => ({
       ...prevState,
       imageAdded: false,
       resultFetched: false,
-      imageLabel: "",
+      imageLabel: '',
       isDisabled: true,
-      isClearDisabled: true,
+      isClearDisabled: true
     }));
     const { files } = e.target;
     if (files.length === 0) {
-      setState((prevState) => ({
+      setState(prevState => ({
         ...prevState,
         testImages: [],
-        imageLabel: "",
+        imageLabel: '',
         imageAdded: false,
         imageSource: [],
         isDisabled: true,
-        isClearDisabled: true,
+        isClearDisabled: true
       }));
     } else {
       const fileList = Object.values(files);
 
       const source = await Promise.all(
-        fileList.map(async (file) => URL.createObjectURL(file))
+        fileList.map(async file => URL.createObjectURL(file))
       );
 
       /* const source = await Promise.all(
       fileList.map(async (file) => encodeImageFileAsURL(file).then(res => res))
     ) */
-      setState((prevState) => ({
+      // imageSource: [...prevState.imageSource, ...source], to Append new Image
+      setState(prevState => ({
         ...prevState,
         testImages: [...prevState.testImages, files[0]],
         imageAdded: true,
         resultFetched: false,
-        imageSource: [...prevState.imageSource, ...source],
-        imageLabel: "Your Work",
+        imageSource: [...source],
+        imageLabel: 'Your Work',
         isDisabled: false,
-        isClearDisabled: false,
+        isClearDisabled: false
       }));
     }
   };
-  const resetData = (e) => {
+  const resetData = e => {
     e.preventDefault();
     // document.getElementById("image-input").value = "";
     resetForm();
-    state.inputImage.current.value = "";
-    setState((prevState) => ({
+    state.inputImage.current.value = '';
+    setState(prevState => ({
       ...prevState,
       testImages: [],
-      imageLabel: "",
+      imageLabel: '',
       imageAdded: false,
       imageSource: [],
       isDisabled: true,
       isClearDisabled: true,
       resultFetched: false,
       isError: false,
-      errorMessage: "",
+      error: {
+        message: ''
+      },
       result: {
         correct: 0,
         incorrect: 0,
-        percentage: 0,
+        percentage: 0
       },
       loading: false,
-      loadingMessage: "",
+      loadingMessage: ''
     }));
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    console.log("submit");
+    const { testName } = inputs;
+    const { orgName, testImages } = state;
+    setState(prevState => ({
+      ...prevState,
+      formLoading: true,
+      isDisabled: true,
+      isClearDisabled: true,
+      loading: true,
+      loadingMessage: 'Please wait we are getting results for you'
+    }));
+    await getScanResult(testName, testImages, orgName)
+      .then(res => {
+        const { output_res, input_res, success, error_message } =
+          res?.data?.data;
+        if (success !== false) {
+          setState(prevState => ({
+            ...prevState,
+            loading: false,
+            formLoading: false,
+            loadingMessage: '',
+            imageLabel: 'Your Result',
+            imageSource: output_res,
+            isDisabled: true,
+            isClearDisabled: false,
+            testImages: []
+          }));
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            formLoading: false,
+            loading: false,
+            loadingMessage: '',
+            isError: true,
+            error: {
+              message: error_message
+            },
+            resultFetched: false,
+            imageLabel: '',
+            isDisabled: false,
+            isClearDisabled: false
+          }));
+          setTimeout(() => {
+            setState(prevState => ({
+              ...prevState,
+              isError: false,
+              error: {
+                message: ''
+              }
+            }));
+          }, 4000);
+        }
+      })
+      .catch(err => {
+        const { response } = err;
+        console.log(err);
+        setState(prevState => ({
+          ...prevState,
+          formLoading: false,
+          loading: false,
+          loadingMessage: '',
+          isError: true,
+          error: {
+            message: 'Error in fetching results, please try again'
+          },
+          resultFetched: false,
+          imageLabel: '',
+          isDisabled: false,
+          isClearDisabled: false
+        }));
+        setTimeout(() => {
+          setState(prevState => ({
+            ...prevState,
+            isError: false,
+            error: {
+              message: ''
+            }
+          }));
+        }, 4000);
+      });
   };
   const router = useRouter();
   useEffect(() => {
-    if (typeof router.query.orgName === "undefined" && state.orgName === "") {
-      router.push("/");
+    if (typeof router.query.orgName === 'undefined' && state.orgName === '') {
+      router.push('/');
     }
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       orgName: router.query.orgName,
       loading: true,
-      loadingMessage: "Fetching Assessments",
+      loadingMessage: 'Fetching Assessments'
     }));
     async function fetchTests() {
       await axios
-        .get("https://api.smartpaperapp.com/api/smartpaper/allAssessments")
-        .then((res) => {
-          setState((prevState) => ({
+        .get('https://api.smartpaperapp.com/api/smartpaper/allAssessments')
+        .then(res => {
+          setState(prevState => ({
             ...prevState,
             loading: false,
-            loadingMessage: "",
-            tests: res.data.data,
+            loadingMessage: '',
+            tests: res.data.data
           }));
         })
-        .catch((e) => {
-          setState((prevState) => ({
+        .catch(e => {
+          setState(prevState => ({
             ...prevState,
             loading: false,
-            loadingMessage: "",
+            loadingMessage: '',
             isError: true,
             error: {
-              message: err.message,
-            },
+              message: err.message
+            }
           }));
           setTimeout(() => {
-            setState((prevState) => ({
+            setState(prevState => ({
               ...prevState,
-              isError: false,
+              isError: false
             }));
           }, 2000);
         });
     }
     fetchTests();
-  }, []);
+  }, [router, state.orgName]);
   return (
     <CustomPaper>
+      {state.isError ? <ErrorMessage error={state.error} /> : null}
+      {state.loading ? <Loader loadingMessage={state.loadingMessage} /> : null}
       <Box
         component="form"
-        sx={{ display: "flex", flexDirection: "column" }}
+        aria-busy={state.formLoading}
+        sx={{ display: 'flex', flexDirection: 'column' }}
         onSubmit={handleSubmit}
         onReset={resetData}
       >
         {/* <CustomLabel label={`Select your assessment`} id="testName" /> */}
-        <CustomLabel id="testNameLabel" htmlFor="testName">
-          <b> Select your assessment</b>
+        <CustomLabel
+          id="testNameLabel"
+          htmlFor="testName"
+          sx={{ marginBottom: '-10px' }}
+        >
+          Select your assessment
         </CustomLabel>
         {/* <CustomSelect name="testName" id="testName">
           <option value="grade12">Grade 12 Math Readiness Test</option>
@@ -204,7 +299,7 @@ export default function CheckTest() {
           aria-label="Select photo(s)"
         /> */}
         <CustomLabel id="fileName" name="fileName" htmlFor="testImages">
-          <b>Select photo(s)</b>
+          Select photo(s)
         </CustomLabel>
         <CustomFileInput
           ref={state.inputImage}
@@ -213,7 +308,7 @@ export default function CheckTest() {
           id="testImages"
           name="testImages"
           aria-label="Select photo(s)"
-          style={{ padding: "15px 20px" }}
+          style={{ padding: '15px 20px' }}
           onChange={handleFileChange}
         />
         {/* <CustomLabel
@@ -231,13 +326,13 @@ export default function CheckTest() {
           variant="contained"
           disabled={!(state.testImages.length > 0 && inputs.testName)}
           sx={{
-            width: "200px",
-            height: "50px",
-            fontSize: "18px",
-            lineHeight: "20px",
-            textTransform: "none",
-            alignSelf: "center",
-            borderRadius: "8px",
+            width: '200px',
+            height: '40px',
+            fontSize: '18px',
+            lineHeight: '20px',
+            textTransform: 'none',
+            alignSelf: 'center',
+            borderRadius: '8px'
           }}
         >
           Submit
@@ -249,16 +344,16 @@ export default function CheckTest() {
           color="error"
           fullWidth
           sx={{
-            width: "200px",
-            height: "50px",
-            fontSize: "18px",
-            lineHeight: "20px",
-            textTransform: "none",
-            alignSelf: "center",
-            mt: "8px",
-            mb: "8px",
-            borderRadius: "8px",
-            color: "theme.palette.error.main",
+            width: '200px',
+            height: '40px',
+            fontSize: '18px',
+            lineHeight: '20px',
+            textTransform: 'none',
+            alignSelf: 'center',
+            mt: '8px',
+            mb: '8px',
+            borderRadius: '8px',
+            color: 'theme.palette.error.main'
           }}
         >
           Clear Data
@@ -266,7 +361,7 @@ export default function CheckTest() {
       </Box>
       {state.imageAdded ? (
         <ImageViewer>
-          {state.imageLabel !== "" ? (
+          {state.imageLabel !== '' ? (
             <Typography htmlFor="output" className="outputLabel">
               {state.imageLabel}
             </Typography>
