@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createRef, useEffect, useState } from 'react';
 import CustomPaper from '../styles/CustomPaper';
 import { CustomButton, CustomInput, CustomLabel } from '../styles/CustomForm';
 import Loader from './Loader';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import {
   Box,
   Button,
@@ -19,7 +22,11 @@ import axios from 'axios';
 import ImageViewer from '../styles/ImageViewer';
 import Image from 'next/image';
 import ErrorMessage from './ErrorMessage';
-import { getScanResult } from '../lib/api';
+import { fetchAllTests, getPageMetadata, getScanResult } from '../lib/api';
+
+const DynamicFeedback = dynamic(() => import('./Feedback'), {
+  ssr: false
+});
 export default function CheckTest() {
   const [state, setState] = useState({
     orgName: '',
@@ -44,7 +51,8 @@ export default function CheckTest() {
     isClearDisabled: true,
     tests: [],
     inputImage: createRef(),
-    formLoading: false
+    formLoading: false,
+    pageMetadata: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     testName: '',
@@ -57,7 +65,8 @@ export default function CheckTest() {
       resultFetched: false,
       imageLabel: '',
       isDisabled: true,
-      isClearDisabled: true
+      isClearDisabled: true,
+      pageMetadata: []
     }));
     const { files } = e.target;
     if (files.length === 0) {
@@ -123,7 +132,7 @@ export default function CheckTest() {
   const handleSubmit = async e => {
     e.preventDefault();
     const { testName } = inputs;
-    const { orgName, testImages } = state;
+    const { orgName, testImages, tests } = state;
     setState(prevState => ({
       ...prevState,
       formLoading: true,
@@ -132,10 +141,15 @@ export default function CheckTest() {
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
+    const pageIds = tests.find(test => test.testName === testName).pageId;
+    const pageMeta = await getPageMetadata(pageIds).then(
+      res => res.data.pageDetails[0]
+    );
     await getScanResult(testName, testImages, orgName)
       .then(res => {
         const { output_res, input_res, success, error_message } =
           res?.data?.data;
+        console.log(res.data.data);
         if (success !== false) {
           setState(prevState => ({
             ...prevState,
@@ -146,8 +160,18 @@ export default function CheckTest() {
             imageSource: output_res,
             isDisabled: true,
             isClearDisabled: false,
-            testImages: []
+            testImages: [],
+            resultFetched: true,
+            pageMetadata: pageMeta
           }));
+          /* setTimeout(() => {
+            router.push({
+              pathname: '/result',
+              query: {
+                url: output_res[0]
+              }
+            });
+          }, 5000); */
         } else {
           setState(prevState => ({
             ...prevState,
@@ -213,10 +237,41 @@ export default function CheckTest() {
       loading: true,
       loadingMessage: 'Fetching Assessments'
     }));
-    async function fetchTests() {
+
+    fetchAllTests()
+      .then(res => {
+        console.log('tests', res.data.data);
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          loadingMessage: '',
+          tests: res.data.data
+        }));
+      })
+      .catch(err => {
+        console.log('error', err);
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          loadingMessage: '',
+          isError: true,
+          error: {
+            message: err.message
+          }
+        }));
+        setTimeout(() => {
+          setState(prevState => ({
+            ...prevState,
+            isError: false
+          }));
+        }, 2000);
+      });
+    /* async function fetchTests() {
+      console.log('fetching tests');
       await axios
         .get('https://api.smartpaperapp.com/api/smartpaper/allAssessments')
         .then(res => {
+          console.log('tests', res.data.data);
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -225,13 +280,14 @@ export default function CheckTest() {
           }));
         })
         .catch(e => {
+          console.log('error', e);
           setState(prevState => ({
             ...prevState,
             loading: false,
             loadingMessage: '',
             isError: true,
             error: {
-              message: err.message
+              message: e.message
             }
           }));
           setTimeout(() => {
@@ -242,10 +298,13 @@ export default function CheckTest() {
           }, 2000);
         });
     }
-    fetchTests();
-  }, [router, state.orgName]);
+    fetchTests(); */
+  }, []);
   return (
     <CustomPaper>
+      <Head>
+        <title>Smart Paper | Scan Assessment</title>
+      </Head>
       {state.isError ? <ErrorMessage error={state.error} /> : null}
       {state.loading ? <Loader loadingMessage={state.loadingMessage} /> : null}
       <Box
@@ -255,7 +314,6 @@ export default function CheckTest() {
         onSubmit={handleSubmit}
         onReset={resetData}
       >
-        {/* <CustomLabel label={`Select your assessment`} id="testName" /> */}
         <CustomLabel
           id="testNameLabel"
           htmlFor="testName"
@@ -263,19 +321,7 @@ export default function CheckTest() {
         >
           Select your assessment
         </CustomLabel>
-        {/* <CustomSelect name="testName" id="testName">
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          <option value="grade12">Grade 12 Math Readiness Test</option>
-          {tests?.map(({ id, testName }, index) => (
-            <option value={testName} key={index}>
-              {testName}
-            </option>
-          ))}
-        </CustomSelect> */}
+
         <Select
           labelId="testNameLabel"
           id="testName"
@@ -291,13 +337,7 @@ export default function CheckTest() {
             </MenuItem>
           ))}
         </Select>
-        {/* <input
-          type="file"
-          accept="image/*"
-          id="testImages"
-          name="testImages"
-          aria-label="Select photo(s)"
-        /> */}
+
         <CustomLabel id="fileName" name="fileName" htmlFor="testImages">
           Select photo(s)
         </CustomLabel>
@@ -311,15 +351,7 @@ export default function CheckTest() {
           style={{ padding: '15px 20px' }}
           onChange={handleFileChange}
         />
-        {/* <CustomLabel
-          label={`Select photo(s)`}
-          id="testImages"
-          htmlFor="testImages"
-        >
-          <Button variant="raised" component="span">
-            Upload
-          </Button>
-        </CustomLabel> */}
+
         <CustomButton
           type="submit"
           fullWidth
@@ -369,17 +401,13 @@ export default function CheckTest() {
             <></>
           )}
           {state?.imageSource.map((source, index) => (
-            <Image
-              src={source}
-              alt={`Your Work - ${index}`}
-              id="output"
-              key={index}
-              loading="lazy"
-              width="100%"
-              height="100%"
-              layout="responsive"
-              objectFit="contain"
+            <DynamicFeedback
               className="outputImage"
+              key={index}
+              url={source}
+              width={350}
+              height={500}
+              metadata={state.pageMetadata || []}
             />
           ))}
         </ImageViewer>
@@ -388,4 +416,19 @@ export default function CheckTest() {
       )}
     </CustomPaper>
   );
+}
+
+{
+  /* <Image
+  src={source}
+  alt={`Your Work - ${index}`}
+  id="output"
+  key={index}
+  loading="lazy"
+  width="100%"
+  height="100%"
+  layout="responsive"
+  objectFit="contain"
+  className="outputImage"
+/>; */
 }
