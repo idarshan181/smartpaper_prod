@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 import { CustomButton, CustomLabel } from '../styles/CustomForm';
+import Head from 'next/head';
 const CustomPaper = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   textAlign: 'center',
@@ -102,6 +103,9 @@ export default function SignIn() {
 
   return (
     <Container>
+      <Head>
+        <title>Smart Paper | Sign In</title>
+      </Head>
       <Box
         sx={{
           marginTop: 8,
