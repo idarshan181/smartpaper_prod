@@ -18,7 +18,7 @@ const ErrorMessage = ({ error }) => {
     ));
   }
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ mb: 0,mt:2 }}>
       <Alert variant="outlined" severity="error">
         <AlertTitle>Error!</AlertTitle>
         <p
@@ -26,7 +26,7 @@ const ErrorMessage = ({ error }) => {
           style={{
             fontSize: '12px',
             margin: '0',
-            fontWeight: '300'
+            fontWeight: '400'
           }}
         >
           {error.message.replace('GraphQL error: ', '')}
