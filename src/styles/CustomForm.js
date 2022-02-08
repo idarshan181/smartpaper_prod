@@ -13,10 +13,9 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
     border: '1px solid #ccc',
     fontSize: 14,
     borderRadius: '8px',
-    width: '350px',
-    minWidth: '300px',
+    width: '100%',
     padding: '15px 20px',
-    margin: '8px 0 15px 0',
+    margin: '0',
     transition: theme.transitions.create([
       'border-color',
       'background-color',
@@ -39,6 +38,10 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
     '&:focus': {
       boxShadow: `#005fcc 0 0 0 0.1rem`,
       borderColor: '#005fcc'
+    },
+    '&:active': {
+      boxShadow: `#005fcc 0 0 0 0.1rem`,
+      borderColor: '#005fcc'
     }
   }
 }));
@@ -47,11 +50,11 @@ const CustomLabel = ({ id, children, ...props }) => {
   return (
     <InputLabel
       sx={{
-        fontSize: 14,
+        fontSize: 12,
         color: '#000000',
         fontWeight: 'bold',
         fontFamily: 'Open Sans',
-        margin: 'auto 8px 0px 8px',
+        margin: 'auto 8px 0px auto',
         padding: 0,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -66,7 +69,6 @@ const CustomLabel = ({ id, children, ...props }) => {
 
 const CustomButton = styled(Button)(({ theme }) => ({
   marginTop: 3,
-  marginBottom: 2,
   fontSize: 14,
   borderRadius: 4,
   textTransform: 'none',
@@ -75,4 +77,8 @@ const CustomButton = styled(Button)(({ theme }) => ({
     backgroundColor: '#1a237e'
   }
 }));
-export { CustomInput, CustomLabel, CustomButton };
+
+const Input = styled('input')({
+  display: 'none'
+});
+export { CustomInput, CustomLabel, CustomButton, Input };
