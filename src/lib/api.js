@@ -11,13 +11,23 @@ const encodeImageFileAsURL = async file =>
     };
   });
 
-const getScanResult = async (testName, testImages, orgName) => {
-  const url = `https://api.smartpaperapp.com/api/smartpaper/scanAssessment-form`;
+const getScanResult = async (
+  testName,
+  testImages,
+  orgName,
+  school,
+  grade,
+  rollNo,
+  subject
+) => {
+  const url = `https://api.smartpaperapp.com/api/smartpaper/scanAssessment-form?school=${school}&grade=${grade}&rollNo=${rollNo}&subject=${subject}`;
   const formData = new FormData();
 
   formData.append('testName', testName);
   formData.append('orgName', orgName);
-  formData.append('testImages', testImages[0]);
+  testImages.map((image, index) => {
+    formData.append('testImages', image);
+  });
 
   const result = await axios.post(url, formData, {
     headers: {
@@ -28,10 +38,11 @@ const getScanResult = async (testName, testImages, orgName) => {
 };
 
 const getPageMetadata = async pageIds => {
+  console.log('pageIds', pageIds[0]);
   const result = await axios.post(
     'https://prod.paperflowapp.com/authoring-page-metadata/pagemetadata/getPageMetadataDetails',
     {
-      pageIds
+      pageIds: pageIds
     }
   );
   return result;
