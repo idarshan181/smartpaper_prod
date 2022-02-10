@@ -1,10 +1,17 @@
 import React from 'react';
-import { Container, Grid, Link, Typography } from '@mui/material';
+import { ButtonBase, Container, Grid, Link, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { CustomButton, OutlinedButton } from '../styles/CustomForm';
 import { Icon } from '@iconify/react';
 
-const SignIn = () => {
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '100%',
+  maxHeight: '100%'
+});
+const Nav1 = () => {
   return (
     <>
       <Container
@@ -15,15 +22,15 @@ const SignIn = () => {
       >
         <Typography
           component="h1"
-          variant="h3"
+          variant="h4"
           align="center"
           sx={{
             fontWeight: 'bold',
-            marginBottom: '24px',
+            marginBottom: '24px'
           }}
           gutterBottom
         >
-          mySmartPaper&trade;
+          My SmartPaper &trade;
         </Typography>
       </Container>
       <Container disableGutters maxWidth="sm" component="main">
@@ -39,7 +46,7 @@ const SignIn = () => {
             >
               <Icon
                 icon="la:chalkboard-teacher"
-                style={{ fontSize: '60px', alignContent: 'center' }}
+                style={{ fontSize: '48px', alignContent: 'center' }}
               />
             </Box>
             <Link
@@ -50,8 +57,8 @@ const SignIn = () => {
                 textDecoration: 'none'
               }}
             >
-              <OutlinedButton variant="outlined" sx={{ width: '100%',fontSize:'24px' }}>
-                I am a teacher
+              <OutlinedButton variant="outlined" sx={{ width: '100%' }}>
+                Go To Teacher Portal
               </OutlinedButton>
             </Link>
           </Grid>
@@ -66,8 +73,7 @@ const SignIn = () => {
             >
               <Icon
                 icon="ph:student-thin"
-                color="#000"
-                style={{ fontSize: '60px', alignContent: 'center' }}
+                style={{ fontSize: '48px', alignContent: 'center' }}
               />
             </Box>
             <Link
@@ -76,8 +82,8 @@ const SignIn = () => {
                 textDecoration: 'none'
               }}
             >
-              <CustomButton variant="contained" sx={{ width: '100%', fontSize:'24px' }}>
-                I am a student
+              <CustomButton variant="contained" sx={{ width: '100%' }}>
+                Continue Scanning Assessment
               </CustomButton>
             </Link>
           </Grid>
@@ -87,4 +93,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export { Nav1 };

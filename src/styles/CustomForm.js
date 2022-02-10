@@ -46,7 +46,7 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
   }
 }));
 
-const CustomLabel = ({ id, children, ...props }) => {
+const CustomLabel = ({ id, children, required, ...props }) => {
   return (
     <InputLabel
       sx={{
@@ -62,7 +62,7 @@ const CustomLabel = ({ id, children, ...props }) => {
       }}
       id={id}
     >
-      {children}
+      {children}{required ? (<span sx={{fontWeight:'light'}}> *</span>) : ''}
     </InputLabel>
   );
 };
@@ -81,4 +81,19 @@ const CustomButton = styled(Button)(({ theme }) => ({
 const Input = styled('input')({
   display: 'none'
 });
-export { CustomInput, CustomLabel, CustomButton, Input };
+const OutlinedButton = styled(Button)(({ theme }) => ({
+  marginTop: 3,
+  fontSize: 14,
+  borderRadius: 4,
+  border: '2px solid #0d47a1',
+  textTransform: 'none',
+  borderColor: '#0d47a1',
+  color:'#0d47a1',
+  transition: 'all 0.5s',
+  '&:hover': {
+    boxShadow: `0 0 3px #1a237e inset`,
+    border: '2px solid #1a237e',
+  }
+}));
+
+export { CustomInput, CustomLabel, CustomButton, Input, OutlinedButton };

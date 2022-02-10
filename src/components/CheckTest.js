@@ -37,7 +37,7 @@ const DynamicFeedback = dynamic(() => import('./Feedback'), {
 
 export default function CheckTest() {
   const [state, setState] = useState({
-    orgName: '',
+    orgName: 'LearnSense Pilot',
     imageLabel: '',
     imageSource: [],
     imageAdded: false,
@@ -64,11 +64,11 @@ export default function CheckTest() {
     ans: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
-    subject: '',
-    grade: '',
+    subject: 'Maths',
+    grade: '3-A',
     chapter: '',
     testName: '',
-    school: '',
+    school: 'Krushnanagar Primary School, Randheja',
     rollNo: ''
   });
 
@@ -264,43 +264,7 @@ export default function CheckTest() {
   };
   const router = useRouter();
   useEffect(() => {
-    if (typeof router.query.orgName === 'undefined' && state.orgName === '') {
-      router.push('/');
-    }
-    setState(prevState => ({
-      ...prevState,
-      orgName: router.query.orgName
-      // loading: true,
-      // loadingMessage: 'Fetching Assessments'
-    }));
-
-    /* fetchAllTests()
-      .then(res => {
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          loadingMessage: '',
-          tests: res.data.data
-        }));
-      })
-      .catch(err => {
-        console.log('error', err);
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          loadingMessage: '',
-          isError: true,
-          error: {
-            message: err.message
-          }
-        }));
-        setTimeout(() => {
-          setState(prevState => ({
-            ...prevState,
-            isError: false
-          }));
-        }, 2000);
-      }); */
+   
     async function fetchTests() {
       console.log('fetching tests');
       await axios
@@ -385,7 +349,7 @@ export default function CheckTest() {
       }}
     >
       <Head>
-        <title>Smart Paper | Scan Assessment</title>
+        <title> mySmartPaper&trade; | Scan Assessment</title>
       </Head>
       {state.loading ? <Loader loadingMessage={state.loadingMessage} /> : null}
       <Box
@@ -420,7 +384,7 @@ export default function CheckTest() {
               alignItems="center"
             >
               <Grid item xs={12}>
-                <CustomLabel id="schoolLabel" htmlFor="school">
+                <CustomLabel id="schoolLabel" htmlFor="school" required>
                   School
                 </CustomLabel>
 
@@ -428,12 +392,13 @@ export default function CheckTest() {
                   labelId="schoolLabel"
                   id="school"
                   name="school"
+                  required
                   value={inputs.school}
                   input={<CustomInput fullWidth placeholder="School Name" />}
                   onChange={handleChange}
                   label="School Name"
                 >
-                  {['School 1', 'School 2', 'School 3'].map((school, index) => (
+                  {['Krushnanagar Primary School, Randheja', 'LearnSense Academy'].map((school, index) => (
                     <MenuItem sx={{ fontSize: 14 }} value={school} key={index}>
                       {school}
                     </MenuItem>
@@ -441,7 +406,7 @@ export default function CheckTest() {
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <CustomLabel id="testNameLabel" htmlFor="testName">
+                <CustomLabel id="testNameLabel" htmlFor="testName" required>
                   Grade - Division
                 </CustomLabel>
 
@@ -450,6 +415,7 @@ export default function CheckTest() {
                   id="grade"
                   name="grade"
                   value={inputs.grade}
+                  required
                   input={<CustomInput fullWidth />}
                   onChange={handleChange}
                 >
@@ -472,6 +438,7 @@ export default function CheckTest() {
                   id="rollNoLabel"
                   name="rollNoLabel"
                   htmlFor="rollNo"
+                  required
                 >
                   Roll No
                 </CustomLabel>
@@ -493,13 +460,14 @@ export default function CheckTest() {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <CustomLabel id="subjectLabel" htmlFor="subject">
-                  Subject
+                <CustomLabel id="subjectLabel" htmlFor="subject" required>
+                  Subject 
                 </CustomLabel>
 
                 <Select
-                  labelId="testNameLabel"
+                  labelId="subjectLabel"
                   id="subject"
+                  required
                   name="subject"
                   value={inputs.subject}
                   input={<CustomInput fullWidth />}
@@ -513,19 +481,25 @@ export default function CheckTest() {
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <CustomLabel id="testNameLabel" htmlFor="testName">
-                  Test Name
+                <CustomLabel id="testNameLabel" htmlFor="testName" required>
+                  Assignment
                 </CustomLabel>
 
                 <Select
                   labelId="testNameLabel"
                   id="testName"
                   name="testName"
+                  required
                   value={inputs.testName}
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                  {state.tests?.map(({ id, testName }, index) => (
+                {['Ch-12-HW-1-Page-1-3', "Ch-12-HW-2-Page-8-10"].map((testName, index) => (
+                    <MenuItem sx={{ fontSize: 14 }} value={testName} key={index}>
+                      {testName}
+                    </MenuItem>
+                  ))}
+                  {/* {state.tests?.map(({ id, testName }, index) => (
                     <MenuItem
                       sx={{ fontSize: 14 }}
                       value={testName}
@@ -533,12 +507,8 @@ export default function CheckTest() {
                     >
                       {testName}
                     </MenuItem>
-                  ))}
-                  {/* {state.tests?.map(({ id, name }, index) => (
-                    <MenuItem sx={{ fontSize: 14 }} value={name} key={index}>
-                      {name}
-                    </MenuItem>
                   ))} */}
+
                 </Select>
               </Grid>
             </Grid>
@@ -653,173 +623,28 @@ export default function CheckTest() {
               + Add Page
             </CustomButton>
           </label>
+          <CustomButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={!(state.testImages.length > 0 && inputs.testName)}
+              sx={{
+                width: '150px',
+                height: '36px',
+                fontSize: '16px',
+                lineHeight: '20px',
+                textTransform: 'none',
+                alignSelf: 'center',
+                marginBottom: '8px',
+                borderRadius: '8px'
+              }}
+            >
+              Submit
+            </CustomButton>
+            
         </CustomPaper>
       </Box>
     </Container>
   );
 }
 
-{
-  /* <Image
-  src={source}
-  alt={`Your Work - ${index}`}
-  id="output"
-  key={index}
-  loading="lazy"
-  width="100%"
-  height="100%"
-  layout="responsive"
-  objectFit="contain"
-  className="outputImage"
-/>; 
-<div key={index}>
-  {state.resultFetched ? (
-    <Canvas
-      url={source}
-      key={index}
-      width={350}
-      height={500}
-      metadata={state.pageMetadata || []}
-    />
-  ) : (
-    <Image
-      src={source}
-      alt={`Your Work - ${index}`}
-      id="output"
-      key={index}
-      loading="lazy"
-      width="100%"
-      height="100%"
-      layout="responsive"
-      objectFit="contain"
-      className="outputImage"
-    />
-  )}
-</div>;
-{<DynamicFeedback
-              className="outputImage"
-              url={source}
-              key={index}
-              width={350}
-              height={500}
-              metadata={state.pageMetadata || []}
-            />}
-*/
-}
-
-{
-  /* <CustomPaper>
-      <Head>
-        <title>Smart Paper | Scan Assessment</title>
-      </Head>
-      {state.isError ? <ErrorMessage error={state.error} /> : null}
-      {state.loading ? <Loader loadingMessage={state.loadingMessage} /> : null}
-      <Box
-        component="form"
-        aria-busy={state.formLoading}
-        sx={{ display: 'flex', flexDirection: 'column' }}
-        onSubmit={handleSubmit}
-        onReset={resetData}
-      >
-        <CustomLabel
-          id="testNameLabel"
-          htmlFor="testName"
-          sx={{ marginBottom: '-10px' }}
-        >
-          Select your assessment
-        </CustomLabel>
-
-        <Select
-          labelId="testNameLabel"
-          id="testName"
-          name="testName"
-          value={inputs.testName}
-          input={<CustomInput />}
-          onChange={handleChange}
-          label="Select your assessment"
-        >
-          {state.tests?.map(({ id, testName }, index) => (
-            <MenuItem sx={{ fontSize: 14 }} value={testName} key={index}>
-              {testName}
-            </MenuItem>
-          ))}
-        </Select>
-
-        <CustomLabel id="fileName" name="fileName" htmlFor="testImages">
-          Select photo(s)
-        </CustomLabel>
-        <CustomFileInput
-          ref={state.inputImage}
-          type="file"
-          accept="image/*"
-          id="testImages"
-          name="testImages"
-          aria-label="Select photo(s)"
-          style={{ padding: '15px 20px' }}
-          onChange={handleFileChange}
-        />
-
-        <CustomButton
-          type="submit"
-          fullWidth
-          variant="contained"
-          disabled={!(state.testImages.length > 0 && inputs.testName)}
-          sx={{
-            width: '200px',
-            height: '40px',
-            fontSize: '18px',
-            lineHeight: '20px',
-            textTransform: 'none',
-            alignSelf: 'center',
-            borderRadius: '8px'
-          }}
-        >
-          Submit
-        </CustomButton>
-        <Button
-          type="reset"
-          disabled={state.isClearDisabled}
-          variant="outlined"
-          color="error"
-          fullWidth
-          sx={{
-            width: '200px',
-            height: '40px',
-            fontSize: '18px',
-            lineHeight: '20px',
-            textTransform: 'none',
-            alignSelf: 'center',
-            mt: '8px',
-            mb: '8px',
-            borderRadius: '8px',
-            color: 'theme.palette.error.main'
-          }}
-        >
-          Clear Data
-        </Button>
-      </Box>
-      {state.imageAdded ? (
-        <ImageViewer>
-          {state.imageLabel !== '' ? (
-            <Typography htmlFor="output" className="outputLabel">
-              {state.imageLabel}
-            </Typography>
-          ) : (
-            <></>
-          )}
-          {state?.imageSource.map((source, index) => (
-            <DynamicFeedback
-              className="outputImage"
-              key={index}
-              url={source}
-              width={350}
-              height={500}
-              metadata={state.pageMetadata || []}
-            />
-          ))}
-        </ImageViewer>
-      ) : (
-        <></>
-      )}
-    </CustomPaper> */
-}
