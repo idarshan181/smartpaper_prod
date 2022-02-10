@@ -624,7 +624,6 @@ export default function CheckTest() {
             </CustomButton>
           </label>
           <CustomButton
-              type="submit"
               fullWidth
               variant="contained"
               disabled={!(state.testImages.length > 0 && inputs.testName)}
@@ -638,6 +637,7 @@ export default function CheckTest() {
                 marginBottom: '8px',
                 borderRadius: '8px'
               }}
+              onClick={handleSubmit}
             >
               Submit
             </CustomButton>
