@@ -19,7 +19,7 @@ const SignIn = () => {
           align="center"
           sx={{
             fontWeight: 'bold',
-            marginBottom: '24px',
+            marginBottom: '24px'
           }}
           gutterBottom
         >
@@ -43,14 +43,21 @@ const SignIn = () => {
               />
             </Box>
             <Link
-              href="http://teacher.mysmartpaper.com"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/teacher"
               sx={{
                 textDecoration: 'none'
               }}
+              // href="http://teacher.mysmartpaper.com"
+              // target="_blank"
+              // rel="noopener noreferrer"
+              // sx={{
+              //   textDecoration: 'none'
+              // }}
             >
-              <OutlinedButton variant="outlined" sx={{ width: '100%',fontSize:'24px' }}>
+              <OutlinedButton
+                variant="outlined"
+                sx={{ width: '100%', fontSize: '24px' }}
+              >
                 I am a teacher
               </OutlinedButton>
             </Link>
@@ -76,7 +83,10 @@ const SignIn = () => {
                 textDecoration: 'none'
               }}
             >
-              <CustomButton variant="contained" sx={{ width: '100%', fontSize:'24px' }}>
+              <CustomButton
+                variant="contained"
+                sx={{ width: '100%', fontSize: '24px' }}
+              >
                 I am a student
               </CustomButton>
             </Link>

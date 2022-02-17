@@ -19,7 +19,6 @@ const Canvas = ({ url, height, width, metadata, ...props }) => {
     ctx.mozImageSmoothingEnabled = false;
     let answers = [];
     let ansBox = [];
-    console.log(url);
     if (metadata.length !== 0) {
       metadata.data.map((item, index) => {
         answers.push(item.ans);
@@ -39,8 +38,6 @@ const Canvas = ({ url, height, width, metadata, ...props }) => {
     img.src = url;
     // img.style.zIndex = 1005;
     img.style.objectFit = 'contain';
-    console.log(ctx);
-    console.log(img);
 
     img.addEventListener('load', () => {
       ctx.drawImage(img, 0, 0, width, height);

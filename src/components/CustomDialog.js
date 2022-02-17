@@ -3,7 +3,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import { Button, DialogActions, Paper, Stack, styled } from '@mui/material';
-import { useEffect } from 'react';
+
 import { ErrorOutline } from '@mui/icons-material';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -15,9 +15,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 const CustomDialog = props => {
   const { children, onClose, open, title, ans, reportError, ...other } = props;
-  useEffect(() => {
-    console.log('rendered');
-  }, []);
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>

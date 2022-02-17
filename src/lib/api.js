@@ -38,7 +38,6 @@ const getScanResult = async (
 };
 
 const getPageMetadata = async pageIds => {
-  console.log('pageIds', pageIds[0]);
   const result = await axios.post(
     'https://prod.paperflowapp.com/authoring-page-metadata/pagemetadata/getPageMetadataDetails',
     {

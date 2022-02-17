@@ -160,7 +160,6 @@ export default function CheckTest() {
     const pageMeta = await getPageMetadata(pageIds).then(
       res => res.data.pageDetails
     );
-    console.log('meta', pageMeta);
     await getScanResult(
       testName,
       testImages,
@@ -171,7 +170,6 @@ export default function CheckTest() {
       subject
     )
       .then(response => {
-        console.log(response);
         const {
           output_res,
           input_res,
@@ -264,13 +262,10 @@ export default function CheckTest() {
   };
   const router = useRouter();
   useEffect(() => {
-   
     async function fetchTests() {
-      console.log('fetching tests');
       await axios
         .get('https://api.smartpaperapp.com/api/smartpaper/allAssessments')
         .then(res => {
-          console.log('tests', res.data.data);
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -279,7 +274,6 @@ export default function CheckTest() {
           }));
         })
         .catch(e => {
-          console.log('error', e);
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -398,7 +392,10 @@ export default function CheckTest() {
                   onChange={handleChange}
                   label="School Name"
                 >
-                  {['Krushnanagar Primary School, Randheja', 'LearnSense Academy'].map((school, index) => (
+                  {[
+                    'Krushnanagar Primary School, Randheja',
+                    'LearnSense Academy'
+                  ].map((school, index) => (
                     <MenuItem sx={{ fontSize: 14 }} value={school} key={index}>
                       {school}
                     </MenuItem>
@@ -461,7 +458,7 @@ export default function CheckTest() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <CustomLabel id="subjectLabel" htmlFor="subject" required>
-                  Subject 
+                  Subject
                 </CustomLabel>
 
                 <Select
@@ -494,11 +491,17 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                {['Ch-12-HW-1-Page-1-3', "Ch-12-HW-2-Page-8-10"].map((testName, index) => (
-                    <MenuItem sx={{ fontSize: 14 }} value={testName} key={index}>
-                      {testName}
-                    </MenuItem>
-                  ))}
+                  {['Ch-12-HW-1-Page-1-3', 'Ch-12-HW-2-Page-8-10'].map(
+                    (testName, index) => (
+                      <MenuItem
+                        sx={{ fontSize: 14 }}
+                        value={testName}
+                        key={index}
+                      >
+                        {testName}
+                      </MenuItem>
+                    )
+                  )}
                   {/* {state.tests?.map(({ id, testName }, index) => (
                     <MenuItem
                       sx={{ fontSize: 14 }}
@@ -508,7 +511,6 @@ export default function CheckTest() {
                       {testName}
                     </MenuItem>
                   ))} */}
-
                 </Select>
               </Grid>
             </Grid>
@@ -527,7 +529,6 @@ export default function CheckTest() {
                 marginTop: '8px',
                 borderRadius: '8px'
               }}
-
             >
               Submit
             </CustomButton>
@@ -624,27 +625,25 @@ export default function CheckTest() {
             </CustomButton>
           </label>
           <CustomButton
-              fullWidth
-              variant="contained"
-              disabled={!(state.testImages.length > 0 && inputs.testName)}
-              sx={{
-                width: '150px',
-                height: '36px',
-                fontSize: '16px',
-                lineHeight: '20px',
-                textTransform: 'none',
-                alignSelf: 'center',
-                marginBottom: '8px',
-                borderRadius: '8px'
-              }}
-              onClick={handleSubmit}
-            >
-              Submit
-            </CustomButton>
-            
+            fullWidth
+            variant="contained"
+            disabled={!(state.testImages.length > 0 && inputs.testName)}
+            sx={{
+              width: '150px',
+              height: '36px',
+              fontSize: '16px',
+              lineHeight: '20px',
+              textTransform: 'none',
+              alignSelf: 'center',
+              marginBottom: '8px',
+              borderRadius: '8px'
+            }}
+            onClick={handleSubmit}
+          >
+            Submit
+          </CustomButton>
         </CustomPaper>
       </Box>
     </Container>
   );
 }
-

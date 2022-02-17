@@ -57,7 +57,7 @@ function Feedback({ url, width, height, metadata }) {
     });
     if (metadata.length !== 0) {
       //metadata.data.map
-      console.log(metadata);
+
       metadata.map((item, index) => {
         let res = {};
         res['studentAnswer'] = item.studentAnswer;
@@ -114,7 +114,6 @@ function Feedback({ url, width, height, metadata }) {
     });
     stage.draw();
     // await Promise.all(setRect).then(() => {
-    //   console.log('insidePromise');
 
     // });
 

@@ -25,9 +25,7 @@ function Result() {
         grade: '3-A',
         subject: 'Maths'
       })
-      .then(res => {
-        console.log(res.data);
-      });
+      .then(res => {});
   };
   const { data, error } = useSWR(
     {
