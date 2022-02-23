@@ -491,7 +491,7 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                  {['Ch-12-HW-1-Page-1-3', 'Ch-12-HW-2-Page-8-10','HW-1-Page-1-3','HW-2-Page-4-6'].map(
+                  {['HW-1-Page-1-3', 'HW-2-Page-4-6', 'HW-3-Page-7-10'].map(
                     (testName, index) => (
                       <MenuItem
                         sx={{ fontSize: 14 }}
