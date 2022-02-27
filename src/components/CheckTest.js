@@ -394,6 +394,7 @@ export default function CheckTest() {
                 >
                   {[
                     'Krushnanagar Primary School, Randheja',
+                    'Teach For India',
                     'LearnSense Academy'
                   ].map((school, index) => (
                     <MenuItem sx={{ fontSize: 14 }} value={school} key={index}>
@@ -416,18 +417,13 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth />}
                   onChange={handleChange}
                 >
-                  <MenuItem sx={{ fontSize: 14 }} value="3-A">
-                    3 - A
-                  </MenuItem>
-                  <MenuItem sx={{ fontSize: 14 }} value="3-B">
-                    3 - B
-                  </MenuItem>
-                  <MenuItem sx={{ fontSize: 14 }} value="4-A">
-                    4 - A
-                  </MenuItem>
-                  <MenuItem sx={{ fontSize: 14 }} value="4-B">
-                    4 - B
-                  </MenuItem>
+                  {['3-A', '3-B', '4-A', '4-B', '8-A', '8-B'].map(
+                    (grade, index) => (
+                      <MenuItem sx={{ fontSize: 14 }} value={grade} key={index}>
+                        {grade.split('').join(' ')}
+                      </MenuItem>
+                    )
+                  )}
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -491,17 +487,20 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                  {['HW-1-Page-1-3', 'HW-2-Page-4-6', 'HW-3-Page-7-10'].map(
-                    (testName, index) => (
-                      <MenuItem
-                        sx={{ fontSize: 14 }}
-                        value={testName}
-                        key={index}
-                      >
-                        {testName}
-                      </MenuItem>
-                    )
-                  )}
+                  {[
+                    'HW-1-Page-1-3',
+                    'HW-2-Page-4-6',
+                    'HW-3-Page-7-10',
+                    'Final-TFI-Test-1'
+                  ].map((testName, index) => (
+                    <MenuItem
+                      sx={{ fontSize: 14 }}
+                      value={testName}
+                      key={index}
+                    >
+                      {testName}
+                    </MenuItem>
+                  ))}
                   {/* {state.tests?.map(({ id, testName }, index) => (
                     <MenuItem
                       sx={{ fontSize: 14 }}
