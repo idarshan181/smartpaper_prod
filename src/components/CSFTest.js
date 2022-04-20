@@ -11,16 +11,15 @@ import {
   Select,
   Typography
 } from '@mui/material';
-import axios from 'axios';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { createRef, useEffect, useState } from 'react';
+import { createRef, useState } from 'react';
 
-import { getPageMetadata, getScanResult } from '@/libs/api';
+import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
-import { CSFTests } from '@/data/csf';
+import {CSFTestNames} from '@/data/csf'
 
 import {
   CustomButton,
@@ -47,20 +46,11 @@ export default function CSFTest() {
       message: ''
     },
     resultFetched: false,
-    result: {
-      correct: 0,
-      incorrect: 0,
-      percentage: 0
-    },
     studentResult: [],
     testImages: [],
     isDisabled: true,
     isClearDisabled: true,
-    tests: [],
     inputImage: createRef(),
-    formLoading: false,
-    pageMetadata: [],
-    ans: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -92,13 +82,14 @@ export default function CSFTest() {
         isClearDisabled: true
       }));
     } else {
+      // Note:  Just to show it in the image component
       const fileList = Object.values(files);
-
       const source = await Promise.all(
         fileList.map(async file => URL.createObjectURL(file))
       );
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
+      //note: testImages will be sent to backend
       setState(prevState => ({
         ...prevState,
         testImages: [...prevState.testImages, ...files],
@@ -130,11 +121,7 @@ export default function CSFTest() {
       error: {
         message: ''
       },
-      result: {
-        correct: 0,
-        incorrect: 0,
-        percentage: 0
-      },
+
       loading: false,
       loadingMessage: ''
     }));
@@ -142,22 +129,15 @@ export default function CSFTest() {
   const handleSubmit = async e => {
     e.preventDefault();
     const { testName, school, grade, rollNo, subject } = inputs;
-    const { orgName, testImages, tests } = state;
+    const { orgName, testImages } = state;
     setState(prevState => ({
       ...prevState,
-      formLoading: true,
       isDisabled: true,
       isClearDisabled: true,
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    const pageIds = tests
-      .filter(test => test.testName === testName)
-      .map(page => page.pageId)
-      .flat();
-    const pageMeta = await getPageMetadata(pageIds).then(
-      res => res.data.pageDetails
-    );
+    
     await getScanResult(
       testName,
       testImages,
@@ -177,16 +157,10 @@ export default function CSFTest() {
           error_message
         } = response?.data?.data;
         if (success !== false) {
-          let ans = [];
-          for (let i = 0; i < pageIds.length; i++) {
-            let x = res.filter(obj => obj.pageNo === i);
-            ans.push(x);
-          }
-          console.log({ response });
+
           setState(prevState => ({
             ...prevState,
             loading: false,
-            formLoading: false,
             loadingMessage: '',
             imageLabel: 'Your Result',
             imageSource: output_res,
@@ -194,8 +168,6 @@ export default function CSFTest() {
             isClearDisabled: false,
             testImages: [],
             resultFetched: true,
-            ans: ans
-            // pageMetadata: pageMeta
           }));
           /* setTimeout(() => {
             router.push({
@@ -208,7 +180,6 @@ export default function CSFTest() {
         } else {
           setState(prevState => ({
             ...prevState,
-            formLoading: false,
             loading: false,
             loadingMessage: '',
             isError: true,
@@ -259,76 +230,8 @@ export default function CSFTest() {
       });
   };
   const router = useRouter();
-  useEffect(() => {
-    async function fetchTests() {
-      await axios
-        .get('https://api.smartpaperapp.com/api/smartpaper/allAssessments')
-        .then(res => {
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            loadingMessage: '',
-            tests: res.data.data
-          }));
-        })
-        .catch(e => {
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            loadingMessage: '',
-            isError: true,
-            error: {
-              message: e.message
-            }
-          }));
-          setTimeout(() => {
-            setState(prevState => ({
-              ...prevState,
-              isError: false
-            }));
-          }, 2000);
-        });
-    }
-    fetchTests();
-  }, []);
-  /* useEffect(() => {
-    const { school, grade, subject } = inputs;
-    if (school.length > 0 && grade.length > 0 && subject.length > 0) {
-      axios
-        .post('/api/tests', {
-          school: school,
-          grade: grade,
-          subject: subject
-        })
-        .then(res => {
-          setState(prevState => ({
-            ...prevState,
-            tests: res.data
-          }));
-        })
-        .catch(err => {
-          const { message } = err.response.data;
-          setState(prevState => ({
-            ...prevState,
-            tests: [],
-            isError: true,
-            error: {
-              message: message
-            }
-          }));
-          setTimeout(() => {
-            setState(prevState => ({
-              ...prevState,
-              isError: false,
-              error: {
-                message: ''
-              }
-            }));
-          }, 5000);
-        });
-    }
-    return null;
-  }, [inputs.school, inputs.grade, inputs.subject]); */
+  
+  
   return (
     <Container
       sx={{
@@ -389,7 +292,7 @@ export default function CSFTest() {
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                  {CSFTests.map((testName, index) => (
+                  {CSFTestNames.map((testName, index) => (
                     <MenuItem
                       sx={{ fontSize: 14 }}
                       value={testName}
@@ -398,15 +301,7 @@ export default function CSFTest() {
                       {testName}
                     </MenuItem>
                   ))}
-                  {/* {state.tests?.map(({ id, testName }, index) => (
-                    <MenuItem
-                      sx={{ fontSize: 14 }}
-                      value={testName}
-                      key={index}
-                    >
-                      {testName}
-                    </MenuItem>
-                  ))} */}
+                  
                 </Select>
               </Grid>
             </Grid>

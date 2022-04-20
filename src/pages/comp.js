@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Nav1 } from '../components/Nav';
 
 export default function Comp() {

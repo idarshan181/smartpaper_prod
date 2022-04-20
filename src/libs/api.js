@@ -25,7 +25,7 @@ const getScanResult = async (
 
   formData.append('testName', testName);
   formData.append('orgName', orgName);
-  testImages.map((image, index) => {
+  testImages.map((image) => {
     formData.append('testImages', image);
   });
 
@@ -54,4 +54,4 @@ const fetchAllTests = async () => {
   return result;
 };
 
-export { encodeImageFileAsURL, getScanResult, getPageMetadata, fetchAllTests };
+export { encodeImageFileAsURL, fetchAllTests,getPageMetadata, getScanResult };
