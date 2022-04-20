@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
-import theme from '../lib/theme';
-import createEmotionCache from '../lib/createEmotionCache';
+import theme from '@/libs/theme';
+import createEmotionCache from '@/libs/createEmotionCache';
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`

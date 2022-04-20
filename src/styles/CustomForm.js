@@ -14,7 +14,10 @@ const CustomInput = styled(InputBase)(({ theme }) => ({
     fontSize: 14,
     borderRadius: '8px',
     width: '100%',
-    padding: '15px 20px',
+    paddingTop: '15px',
+    paddingRight: '20px',
+    paddingBottom: '15px',
+    paddingLeft: '20px',
     margin: '0',
     transition: theme.transitions.create([
       'border-color',
@@ -62,7 +65,8 @@ const CustomLabel = ({ id, children, required, ...props }) => {
       }}
       id={id}
     >
-      {children}{required ? (<span sx={{fontWeight:'light'}}> *</span>) : ''}
+      {children}
+      {required ? <span sx={{ fontWeight: 'light' }}> *</span> : ''}
     </InputLabel>
   );
 };
@@ -88,12 +92,12 @@ const OutlinedButton = styled(Button)(({ theme }) => ({
   border: '2px solid #0d47a1',
   textTransform: 'none',
   borderColor: '#0d47a1',
-  color:'#0d47a1',
+  color: '#0d47a1',
   transition: 'all 0.5s',
   '&:hover': {
     boxShadow: `0 0 3px #1a237e inset`,
-    border: '2px solid #1a237e',
+    border: '2px solid #1a237e'
   }
 }));
 
-export { CustomInput, CustomLabel, CustomButton, Input, OutlinedButton };
+export { CustomButton, CustomInput, CustomLabel, Input, OutlinedButton };

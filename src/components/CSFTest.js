@@ -1,8 +1,6 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-undef */
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Button,
@@ -13,13 +11,15 @@ import {
   Typography
 } from '@mui/material';
 import axios from 'axios';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { createRef, useEffect, useState } from 'react';
 
+import { getPageMetadata, getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
+
+import { CSFGrades, CSFSchools, CSFSubjects, CSFTests } from '@/data/csf';
 
 import {
   CustomButton,
@@ -32,13 +32,8 @@ import ImageViewer from '@/styles/ImageViewer';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
-import { getPageMetadata, getScanResult } from '../libs/api';
 
-const DynamicFeedback = dynamic(() => import('./Feedback'), {
-  ssr: false
-});
-
-export default function CheckTest() {
+export default function CSFTest() {
   const [state, setState] = useState({
     orgName: 'LearnSense Pilot',
     imageLabel: '',
@@ -71,7 +66,7 @@ export default function CheckTest() {
     grade: '3-A',
     chapter: '',
     testName: '',
-    school: 'Krushnanagar Primary School, Randheja',
+    school: 'School 1',
     rollNo: ''
   });
 
@@ -187,7 +182,7 @@ export default function CheckTest() {
             let x = res.filter(obj => obj.pageNo === i);
             ans.push(x);
           }
-
+          console.log({ response });
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -394,11 +389,7 @@ export default function CheckTest() {
                   onChange={handleChange}
                   label="School Name"
                 >
-                  {[
-                    'Krushnanagar Primary School, Randheja',
-                    'Teach For India',
-                    'LearnSense Academy'
-                  ].map((school, index) => (
+                  {CSFSchools.map((school, index) => (
                     <MenuItem sx={{ fontSize: 14 }} value={school} key={index}>
                       {school}
                     </MenuItem>
@@ -419,13 +410,11 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth />}
                   onChange={handleChange}
                 >
-                  {['3-A', '3-B', '4-A', '4-B', '8-A', '8-B'].map(
-                    (grade, index) => (
-                      <MenuItem sx={{ fontSize: 14 }} value={grade} key={index}>
-                        {grade.split('').join(' ')}
-                      </MenuItem>
-                    )
-                  )}
+                  {CSFGrades.map((grade, index) => (
+                    <MenuItem sx={{ fontSize: 14 }} value={grade} key={index}>
+                      {grade.split('').join(' ')}
+                    </MenuItem>
+                  ))}
                 </Select>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -468,7 +457,7 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth />}
                   onChange={handleChange}
                 >
-                  {['Maths', 'Gujarati', 'English'].map((subject, index) => (
+                  {CSFSubjects.map((subject, index) => (
                     <MenuItem sx={{ fontSize: 14 }} value={subject} key={index}>
                       {subject}
                     </MenuItem>
@@ -489,12 +478,7 @@ export default function CheckTest() {
                   input={<CustomInput fullWidth placeholder="Test Name" />}
                   onChange={handleChange}
                 >
-                  {[
-                    'HW-1-Page-1-3',
-                    'HW-2-Page-4-6',
-                    'HW-3-Page-7-10',
-                    'Final-TFI-Test-1'
-                  ].map((testName, index) => (
+                  {CSFTests.map((testName, index) => (
                     <MenuItem
                       sx={{ fontSize: 14 }}
                       value={testName}
@@ -569,13 +553,13 @@ export default function CheckTest() {
               )}
               {state.resultFetched
                 ? state.imageSource.map((source, index) => (
-                    <DynamicFeedback
+                    <Image
                       className="outputImage"
                       key={index}
-                      url={source}
+                      src={source}
                       width={350}
                       height={500}
-                      metadata={state.ans[index] || []}
+                      alt={`output-${index}`}
                     />
                   ))
                 : state.imageSource.map((source, index) => (
@@ -603,7 +587,6 @@ export default function CheckTest() {
               type="file"
               ref={state.inputImage}
               aria-label="Select photo(s)"
-              style={{ padding: '15px 20px' }}
               onChange={handleFileChange}
             />
             <CustomButton

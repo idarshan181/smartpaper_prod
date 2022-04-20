@@ -11,7 +11,7 @@ const CustomPaper = styled(Paper)(({ theme, ...props }) => ({
   borderRadius: '10px',
   lineHeight: '60px',
   fontSize: 16,
-  padding: '0 1.8rem',
+  // padding: '0 1.8rem',
   display: 'flex',
   flexDirection: 'column'
 }));

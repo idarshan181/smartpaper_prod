@@ -73,7 +73,6 @@ const SignIn = () => {
             >
               <Icon
                 icon="ph:student-thin"
-                color="#000"
                 style={{ fontSize: '60px', alignContent: 'center' }}
               />
             </Box>
