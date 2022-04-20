@@ -1,3 +1,4 @@
+/* eslint-disable no-const-assign */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable no-unused-vars */
@@ -19,7 +20,7 @@ import { createRef, useEffect, useState } from 'react';
 import { getPageMetadata, getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
-import { CSFGrades, CSFSchools, CSFSubjects, CSFTests } from '@/data/csf';
+import { CSFTests } from '@/data/csf';
 
 import {
   CustomButton,
@@ -35,7 +36,7 @@ import Loader from './Loader';
 
 export default function CSFTest() {
   const [state, setState] = useState({
-    orgName: 'LearnSense Pilot',
+    orgName: 'CSF',
     imageLabel: '',
     imageSource: [],
     imageAdded: false,
@@ -62,12 +63,11 @@ export default function CSFTest() {
     ans: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
-    subject: 'Maths',
-    grade: '3-A',
-    chapter: '',
+    school: '',
     testName: '',
-    school: 'School 1',
-    rollNo: ''
+    rollNo:'',
+    grade: '',
+    subject: '',
   });
 
   const handleFileChange = async e => {
@@ -374,97 +374,8 @@ export default function CSFTest() {
               justifyContent="center"
               alignItems="center"
             >
-              <Grid item xs={12}>
-                <CustomLabel id="schoolLabel" htmlFor="school" required>
-                  School
-                </CustomLabel>
-
-                <Select
-                  labelId="schoolLabel"
-                  id="school"
-                  name="school"
-                  required
-                  value={inputs.school}
-                  input={<CustomInput fullWidth placeholder="School Name" />}
-                  onChange={handleChange}
-                  label="School Name"
-                >
-                  {CSFSchools.map((school, index) => (
-                    <MenuItem sx={{ fontSize: 14 }} value={school} key={index}>
-                      {school}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomLabel id="testNameLabel" htmlFor="testName" required>
-                  Grade - Division
-                </CustomLabel>
-
-                <Select
-                  labelId="testNameLabel"
-                  id="grade"
-                  name="grade"
-                  value={inputs.grade}
-                  required
-                  input={<CustomInput fullWidth />}
-                  onChange={handleChange}
-                >
-                  {CSFGrades.map((grade, index) => (
-                    <MenuItem sx={{ fontSize: 14 }} value={grade} key={index}>
-                      {grade.split('').join(' ')}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomLabel
-                  id="rollNoLabel"
-                  name="rollNoLabel"
-                  htmlFor="rollNo"
-                  required
-                >
-                  Roll No
-                </CustomLabel>
-                <CustomInput
-                  margin="dense"
-                  required
-                  fullWidth
-                  name="rollNo"
-                  label="Roll No"
-                  id="rollNo"
-                  value={inputs.rollNo}
-                  inputProps={{
-                    inputMode: 'numeric'
-                  }}
-                  autoComplete="rollno"
-                  aria-errormessage="my-helper-text"
-                  onChange={handleChange}
-                  placeholder="Roll No"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomLabel id="subjectLabel" htmlFor="subject" required>
-                  Subject
-                </CustomLabel>
-
-                <Select
-                  labelId="subjectLabel"
-                  id="subject"
-                  required
-                  name="subject"
-                  value={inputs.subject}
-                  input={<CustomInput fullWidth />}
-                  onChange={handleChange}
-                >
-                  {CSFSubjects.map((subject, index) => (
-                    <MenuItem sx={{ fontSize: 14 }} value={subject} key={index}>
-                      {subject}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              
+              <Grid item xs={12} sm={12}>
                 <CustomLabel id="testNameLabel" htmlFor="testName" required>
                   Assignment
                 </CustomLabel>
