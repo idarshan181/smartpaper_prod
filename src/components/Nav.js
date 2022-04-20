@@ -1,9 +1,12 @@
-import React from 'react';
-import { ButtonBase, Container, Grid, Link, Typography } from '@mui/material';
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-unused-vars */
+import { Icon } from '@iconify/react';
+import { Container, Grid, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
+import React from 'react';
+
 import { CustomButton, OutlinedButton } from '../styles/CustomForm';
-import { Icon } from '@iconify/react';
 
 const Img = styled('img')({
   margin: 'auto',

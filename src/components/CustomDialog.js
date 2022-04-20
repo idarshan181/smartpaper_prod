@@ -1,10 +1,11 @@
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-unused-vars */
+import { ErrorOutline } from '@mui/icons-material';
+import { Button, DialogActions, Paper, Stack, styled } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import { Button, DialogActions, Paper, Stack, styled } from '@mui/material';
-
-import { ErrorOutline } from '@mui/icons-material';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,

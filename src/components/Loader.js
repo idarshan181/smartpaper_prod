@@ -1,9 +1,9 @@
+import { keyframes } from '@emotion/react';
 import { Box, Typography } from '@mui/material';
 import CircularProgress, {
   circularProgressClasses
 } from '@mui/material/CircularProgress';
 import Fade from '@mui/material/Fade';
-import { keyframes } from '@emotion/react';
 
 const color = keyframes`
   100%,

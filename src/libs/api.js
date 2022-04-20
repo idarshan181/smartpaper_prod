@@ -21,8 +21,8 @@ const getScanResult = async (
   subject
 ) => {
   const url = `https://api.smartpaperapp.com/api/smartpaper/scanAssessment-form?school=${school}&grade=${grade}&rollNo=${rollNo}&subject=${subject}`;
+  
   const formData = new FormData();
-
   formData.append('testName', testName);
   formData.append('orgName', orgName);
   testImages.map((image) => {

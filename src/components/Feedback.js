@@ -1,10 +1,12 @@
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
-import { Button } from '@mui/material';
+import Konva from 'konva';
 import { createRef, useEffect, useState } from 'react';
 import { Image, Layer, Stage } from 'react-konva';
 import useImage from 'use-image';
-import Konva from 'konva';
+
 import CustomDialog from './CustomDialog';
 function Feedback({ url, width, height, metadata }) {
   const [image] = useImage(url, 'Anonymous');

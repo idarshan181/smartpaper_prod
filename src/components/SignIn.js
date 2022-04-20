@@ -1,8 +1,9 @@
-import React from 'react';
+import { Icon } from '@iconify/react';
 import { Container, Grid, Link, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import React from 'react';
+
 import { CustomButton, OutlinedButton } from '../styles/CustomForm';
-import { Icon } from '@iconify/react';
 
 const SignIn = () => {
   return (

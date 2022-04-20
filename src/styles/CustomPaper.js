@@ -1,7 +1,7 @@
 import { Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const CustomPaper = styled(Paper)(({ theme, ...props }) => ({
+const CustomPaper = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   textAlign: 'left',
   color: theme.palette.text.primary,

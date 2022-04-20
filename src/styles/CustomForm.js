@@ -68,10 +68,10 @@ const CustomLabel = ({ id, children, required, ...props }) => {
       {children}
       {required ? <span sx={{ fontWeight: 'light' }}> *</span> : ''}
     </InputLabel>
-  );
+  ); 
 };
 
-const CustomButton = styled(Button)(({ theme }) => ({
+const CustomButton = styled(Button)(() => ({
   marginTop: 3,
   fontSize: 14,
   borderRadius: 4,
@@ -85,7 +85,7 @@ const CustomButton = styled(Button)(({ theme }) => ({
 const Input = styled('input')({
   display: 'none'
 });
-const OutlinedButton = styled(Button)(({ theme }) => ({
+const OutlinedButton = styled(Button)(() => ({
   marginTop: 3,
   fontSize: 14,
   borderRadius: 4,
