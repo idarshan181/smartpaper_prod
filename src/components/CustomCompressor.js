@@ -1,4 +1,3 @@
-
 import Resizer from 'react-image-file-resizer';
 const resizeFile = file =>
   new Promise(resolve => {
@@ -6,7 +5,7 @@ const resizeFile = file =>
       file,
       3000,
       3000,
-      'JPEG',
+      'jpeg',
       80,
       0,
       uri => {
@@ -26,10 +25,12 @@ export default function CustomCompressor() {
       /* const out = resizeFile(file);
       console.log(out);
       final.push(out); */
-      resizeFile(file).then(res => {
-        console.log(`resized-${id}`, res);
-        final.push(res);
-      }).catch(err => console.log(err));
+      resizeFile(file)
+        .then(res => {
+          console.log(`resized-${id}`, res);
+          final.push(res);
+        })
+        .catch(err => console.log(err));
     });
   };
   return (
