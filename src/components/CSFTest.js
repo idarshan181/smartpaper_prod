@@ -18,7 +18,7 @@ import { createRef, useState } from 'react';
 import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
-import {CSFTestNames} from '@/data/csf'
+import { CSFTestNames } from '@/data/csf';
 
 import {
   CustomButton,
@@ -49,14 +49,14 @@ export default function CSFTest() {
     testImages: [],
     isDisabled: true,
     isClearDisabled: true,
-    inputImage: createRef(),
+    inputImage: createRef()
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
     testName: '',
-    rollNo:'',
+    rollNo: '',
     grade: '',
-    subject: '',
+    subject: ''
   });
 
   const handleFileChange = async e => {
@@ -81,8 +81,13 @@ export default function CSFTest() {
         isClearDisabled: true
       }));
     } else {
+      
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
+      //
+      // compressor
+      //(fileList)
+      //
       const source = await Promise.all(
         fileList.map(async file => URL.createObjectURL(file))
       );
@@ -107,7 +112,7 @@ export default function CSFTest() {
     resetForm();
     clearForm();
     state.inputImage.current.value = '';
-    
+
     setState(prevState => ({
       ...prevState,
       testImages: [],
@@ -147,7 +152,7 @@ export default function CSFTest() {
       subject
     )
       .then(response => {
-        console.log({response})
+        console.log({ response });
         const {
           output_res,
           input_res,
@@ -157,7 +162,6 @@ export default function CSFTest() {
           error_message
         } = response?.data?.data;
         if (success !== false) {
-
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -167,7 +171,7 @@ export default function CSFTest() {
             isDisabled: true,
             isClearDisabled: false,
             testImages: [],
-            resultFetched: true,
+            resultFetched: true
           }));
         } else {
           setState(prevState => ({
@@ -220,8 +224,7 @@ export default function CSFTest() {
         }, 4000);
       });
   };
-  
-  
+
   return (
     <Container
       sx={{
@@ -290,7 +293,6 @@ export default function CSFTest() {
                       {testName}
                     </MenuItem>
                   ))}
-                  
                 </Select>
               </Grid>
             </Grid>
@@ -333,7 +335,7 @@ export default function CSFTest() {
             >
               Clear Data
             </Button>
-            
+
             {
               <Typography variant="body1" gutterBottom sx={{ mt: 1, mb: 2 }}>
                 Total pages : {state.imageSource.length}
@@ -379,7 +381,6 @@ export default function CSFTest() {
               accept="image/*"
               id="testImages"
               name="testImages"
-              multiple
               type="file"
               ref={state.inputImage}
               aria-label="Select photo(s)"
