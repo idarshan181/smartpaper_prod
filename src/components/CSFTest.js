@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { createRef, useState } from 'react';
 
 import { getScanResult } from '@/libs/api';
@@ -108,6 +107,7 @@ export default function CSFTest() {
     resetForm();
     clearForm();
     state.inputImage.current.value = '';
+
     setState(prevState => ({
       ...prevState,
       testImages: [],
@@ -121,13 +121,13 @@ export default function CSFTest() {
       error: {
         message: ''
       },
-
       loading: false,
       loadingMessage: ''
     }));
   };
   const handleSubmit = async e => {
     e.preventDefault();
+
     const { testName, school, grade, rollNo, subject } = inputs;
     const { orgName, testImages } = state;
     setState(prevState => ({
@@ -137,7 +137,6 @@ export default function CSFTest() {
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-
     await getScanResult(
       testName,
       testImages,
@@ -148,6 +147,7 @@ export default function CSFTest() {
       subject
     )
       .then(response => {
+        console.log({ response });
         const {
           output_res,
           input_res,
@@ -168,14 +168,6 @@ export default function CSFTest() {
             testImages: [],
             resultFetched: true
           }));
-          /* setTimeout(() => {
-            router.push({
-              pathname: '/result',
-              query: {
-                url: output_res[0]
-              }
-            });
-          }, 5000); */
         } else {
           setState(prevState => ({
             ...prevState,
@@ -202,7 +194,6 @@ export default function CSFTest() {
         }
       })
       .catch(err => {
-        const { response } = err;
         setState(prevState => ({
           ...prevState,
           formLoading: false,
@@ -228,7 +219,6 @@ export default function CSFTest() {
         }, 4000);
       });
   };
-  const router = useRouter();
 
   return (
     <Container
@@ -243,7 +233,7 @@ export default function CSFTest() {
       <Head>
         <title> mySmartPaper&trade; | Scan Assessment</title>
       </Head>
-      {state.loading ? <Loader loadingMessage={state.loadingMessage} /> : null}
+      {state.loading && <Loader loadingMessage={state.loadingMessage} />}
       <Box
         component="main"
         maxWidth="xs"
@@ -340,6 +330,7 @@ export default function CSFTest() {
             >
               Clear Data
             </Button>
+
             {
               <Typography variant="body1" gutterBottom sx={{ mt: 1, mb: 2 }}>
                 Total pages : {state.imageSource.length}

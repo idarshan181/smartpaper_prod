@@ -1,12 +1,14 @@
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-import axios from 'axios';
+/* eslint-disable no-unused-vars */
+/* eslint-disable unused-imports/no-unused-vars */
 import { Button } from '@mui/material';
+import axios from 'axios';
+import dynamic from 'next/dynamic';
+import useSWR from 'swr';
+
 const DynamicFeedback = dynamic(() => import('../components/Feedback'), {
   ssr: false
 });
+
 const fetcher = async args => {
   const {
     url,
@@ -38,21 +40,6 @@ function Result() {
     },
     fetcher
   );
-  /* if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
-  if (data) {
-    return (
-      <ul>
-        {data.map((t, i) => (
-          <li key={t.id}>
-            <Link href="/tests/[id]" as={`/test/${t.id}`}>
-              <a>{`Test ${t.id}`}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
-  } */
   return (
     <div>
       <Button onClick={getTest}>Get Data</Button>

@@ -1,9 +1,12 @@
-import * as React from 'react';
-import Document, { Head, Html, Main, NextScript } from 'next/document';
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import createEmotionServer from '@emotion/server/create-instance';
-import theme from '@/libs/theme';
-import createEmotionCache from '@/libs/createEmotionCache';
+import Document, { Head, Html, Main, NextScript } from 'next/document';
+import * as React from 'react';
 import { createGlobalStyle } from 'styled-components';
+
+import createEmotionCache from '@/libs/createEmotionCache';
+import theme from '@/libs/theme';
 
 const GlobalStyle = createGlobalStyle`
 html{
