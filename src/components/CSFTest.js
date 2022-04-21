@@ -81,8 +81,13 @@ export default function CSFTest() {
         isClearDisabled: true
       }));
     } else {
+      
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
+      //
+      // compressor
+      //(fileList)
+      //
       const source = await Promise.all(
         fileList.map(async file => URL.createObjectURL(file))
       );
