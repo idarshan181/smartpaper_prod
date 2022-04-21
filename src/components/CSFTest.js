@@ -53,7 +53,7 @@ export default function CSFTest() {
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
-    testName: '',
+    testName: 'CSF_Assessment_1',
     rollNo: '',
     grade: '',
     subject: ''
@@ -81,7 +81,6 @@ export default function CSFTest() {
         isClearDisabled: true
       }));
     } else {
-      
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       //
@@ -110,7 +109,6 @@ export default function CSFTest() {
     e.preventDefault();
     // document.getElementById("image-input").value = "";
     resetForm();
-    clearForm();
     state.inputImage.current.value = '';
 
     setState(prevState => ({
