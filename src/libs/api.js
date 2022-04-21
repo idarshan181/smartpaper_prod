@@ -20,12 +20,12 @@ const getScanResult = async (
   rollNo,
   subject
 ) => {
-  const url = `https://api.smartpaperapp.com/api/smartpaper/scanAssessment-form?school=${school}&grade=${grade}&rollNo=${rollNo}&subject=${subject}`;
-  
+  const url = `${process.env.NEXT_PUBLIC_SMARTPAPER_API_URL}/api/smartpaper/scanAssessment-form?school=${school}&grade=${grade}&rollNo=${rollNo}&subject=${subject}`;
+
   const formData = new FormData();
   formData.append('testName', testName);
   formData.append('orgName', orgName);
-  testImages.map((image) => {
+  testImages.map(image => {
     formData.append('testImages', image);
   });
 
@@ -54,4 +54,4 @@ const fetchAllTests = async () => {
   return result;
 };
 
-export { encodeImageFileAsURL, fetchAllTests,getPageMetadata, getScanResult };
+export { encodeImageFileAsURL, fetchAllTests, getPageMetadata, getScanResult };
