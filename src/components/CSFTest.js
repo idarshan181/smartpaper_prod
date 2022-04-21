@@ -204,13 +204,14 @@ export default function CSFTest() {
           loadingMessage: '',
           isError: true,
           error: {
-            message: 'Error in fetching results, please try again'
+            message: err.response.data.detail
           },
           resultFetched: false,
           imageLabel: '',
           isDisabled: false,
           isClearDisabled: false
         }));
+        window.scrollTo(0, 0);
         setTimeout(() => {
           setState(prevState => ({
             ...prevState,
