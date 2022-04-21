@@ -19,7 +19,7 @@ import { createRef, useState } from 'react';
 import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
-import {CSFTestNames} from '@/data/csf'
+import { CSFTestNames } from '@/data/csf';
 
 import {
   CustomButton,
@@ -50,14 +50,14 @@ export default function CSFTest() {
     testImages: [],
     isDisabled: true,
     isClearDisabled: true,
-    inputImage: createRef(),
+    inputImage: createRef()
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
     testName: '',
-    rollNo:'',
+    rollNo: '',
     grade: '',
-    subject: '',
+    subject: ''
   });
 
   const handleFileChange = async e => {
@@ -137,7 +137,7 @@ export default function CSFTest() {
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    
+
     await getScanResult(
       testName,
       testImages,
@@ -157,7 +157,6 @@ export default function CSFTest() {
           error_message
         } = response?.data?.data;
         if (success !== false) {
-
           setState(prevState => ({
             ...prevState,
             loading: false,
@@ -167,7 +166,7 @@ export default function CSFTest() {
             isDisabled: true,
             isClearDisabled: false,
             testImages: [],
-            resultFetched: true,
+            resultFetched: true
           }));
           /* setTimeout(() => {
             router.push({
@@ -230,8 +229,7 @@ export default function CSFTest() {
       });
   };
   const router = useRouter();
-  
-  
+
   return (
     <Container
       sx={{
@@ -277,7 +275,6 @@ export default function CSFTest() {
               justifyContent="center"
               alignItems="center"
             >
-              
               <Grid item xs={12} sm={12}>
                 <CustomLabel id="testNameLabel" htmlFor="testName" required>
                   Assignment
@@ -301,7 +298,6 @@ export default function CSFTest() {
                       {testName}
                     </MenuItem>
                   ))}
-                  
                 </Select>
               </Grid>
             </Grid>
@@ -389,7 +385,6 @@ export default function CSFTest() {
               accept="image/*"
               id="testImages"
               name="testImages"
-              multiple
               type="file"
               ref={state.inputImage}
               aria-label="Select photo(s)"
