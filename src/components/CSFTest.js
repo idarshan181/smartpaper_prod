@@ -17,6 +17,7 @@ import { createRef, useState } from 'react';
 
 import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
+import Resizer from 'react-image-file-resizer';
 
 import { CSFTestNames } from '@/data/csf';
 
@@ -31,7 +32,25 @@ import ImageViewer from '@/styles/ImageViewer';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
+import Compressor from 'compressorjs';
 
+const resizeFile = file =>
+  new Promise(resolve => {
+    Resizer.imageFileResizer(
+      file, //file name
+      1600, //max width
+      1600, //ht
+      'jpeg', //format
+      90, //quality
+      0, //rotation
+      uri => {
+        resolve(uri);
+      },
+      'file',
+      720,
+      1280      
+    );
+  });
 export default function CSFTest() {
   const [state, setState] = useState({
     orgName: 'CSF',
@@ -84,10 +103,31 @@ export default function CSFTest() {
       
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
+      // fileList.map((file, id) => {
+      //   console.log(`original -${id}`, file);
+      //   new Compressor(file, {
+      //     quality: 0.9,
+      //     success: (res)=> {
+      //       console.log(res);
+      //     }
+      //   })
+      // });
       //
       // compressor
       //(fileList)
       //
+      fileList.map((file, id) => {
+        console.log(`original-${id}`, file);
+        /* const out = resizeFile(file);
+        console.log(out);
+        final.push(out); */
+        resizeFile(file)
+          .then(res => {
+            console.log(`using image resizer-${id}`, res);
+            // final.push(res);
+          })
+          .catch(err => console.log(err));
+      });
       const source = await Promise.all(
         fileList.map(async file => URL.createObjectURL(file))
       );
