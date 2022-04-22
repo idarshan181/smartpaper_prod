@@ -53,7 +53,7 @@ export default function CSFTest() {
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
-    testName: 'CSF_Assessment_1',
+    testName: 'Demo MCQ 1',
     rollNo: '',
     grade: '',
     subject: ''
