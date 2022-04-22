@@ -128,8 +128,19 @@ export default function CSFTest() {
           })
           .catch(err => console.log(err));
       });
+
+      const resImg = fileList.map((file , id) => {
+        resizeFile(file);
+      });
       const source = await Promise.all(
-        fileList.map(async file => URL.createObjectURL(file))
+        fileList.map(async file =>
+          // {
+          // resizeFile(file),
+            // console.log(file),
+            URL.createObjectURL(file)
+          // }
+          // })
+    )
       );
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
