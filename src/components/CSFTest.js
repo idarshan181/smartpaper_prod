@@ -134,11 +134,11 @@ export default function CSFTest() {
       });
       const source = await Promise.all(
         fileList.map(async file =>
-          // {
+          {
           // resizeFile(file),
-            // console.log(file),
-            URL.createObjectURL(file)
-          // }
+            console.log(file);
+            URL.createObjectURL(file);
+          }
           // })
     )
       );
