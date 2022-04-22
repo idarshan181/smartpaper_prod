@@ -1,7 +1,5 @@
-// import fs from "fs";
-// import convert from "heic-convert";
-// import heic2any from "heic2any";
-// import { promisify } from "util";
+/* eslint-disable @next/next/no-img-element */
+import { useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
 const resizeFile = file =>
@@ -10,98 +8,52 @@ const resizeFile = file =>
       file, //file name
       3000, //max width
       3000, //ht
-      'png', //format
-      100, //quality
+      'webp', //format
+      80, //quality
       0, //rotation
-      
+
       uri => {
         resolve(uri);
       },
-
       'file',
-      1440,
-      2560
+      720,
+      1280
     );
   });
 
-  // const handleHeic = async (e) => {
-  //   const {files} = e.target;
-  //   if (files.length === 0) return;
-  //   const fileList = Object.values(files);
-  
-  //   fileList.map((file, id) => {
-  //     console.log(`heic img - ${id}`, file);
-  //     console.log(file.stream());
-  //     // const buffer = await new Blob([file], { type: "image/heic"}).arrayBuffer();
-  //     // console.log(buffer.byteLength); 
-  //     // const img = await convert ({
-  //     //   buffer: file.stream(),
-  //     //   format: "JPEG",
-  //     //   quality: 1
-  //     // });
-  //     console.log(file);
-  //   })
-  // }  
-
-
 export default function CustomCompressor() {
+  const [cFile, setCFile] = useState([]);
   const handleFile = async e => {
     const { files } = e.target;
     if (files.length === 0) return;
-    let final = [];
     const fileList = Object.values(files);
-    fileList.map((file, id) => {
+    fileList.map(async (file, id) => {
       console.log(`original-${id}`, file);
-      /* const out = resizeFile(file);
-      console.log(out);
-      final.push(out); */
-      resizeFile(file)
+
+      await resizeFile(file)
         .then(res => {
-          console.log(`resized-${id}`, res);
-          final.push(res);
+          console.log(`using image resizer-${id}`, res);
+          const blob = URL.createObjectURL(res);
+          setCFile(prevState => [...prevState, blob]);
         })
         .catch(err => console.log(err));
     });
   };
-  // const handleHeic = async e => {
-  //   const { files } = e.target;
-  //   if (files.length === 0) return;
-  //   let final = [];
-  //   const fileList = Object.values(files);
-  //   fileList.map((file, id) => {
-  //     console.log(`original ${id}`, file);
-  //     const out = file.blob();
-  //     heic2any()
-  //   })
-  // }
-  // const handleHeic = async (e) => {
-  //   const {files} = e.target;
-  //   if (files.length === 0) return;
-  //   const fileList = Object.values(files);
-  
-  //   fileList.map((file, id) => {
-  //     console.log(`heic img - ${id}`, file);
-  //     console.log(file.stream());
-  //     // const buffer = await new Blob([file], { type: "image/heic"}).arrayBuffer();
-  //     // console.log(buffer.byteLength); 
-  //     // const img = await convert ({
-  //     //   buffer: file.stream(),
-  //     //   format: "JPEG",
-  //     //   quality: 1
-  //     // });
-  //     console.log(file);
-  //   })
-  // }  
-  
+
   return (
     <div>
       <input
         type="file"
+        multiple
         accept="image/*, .heic,.heif"
         id="compImage"
         name="compImage"
         onChange={handleFile}
       />
+      {cFile &&
+        cFile.map((img, id) => (
+          <img src={img} key={id} alt={`Compressed IMage - ${id}`} />
+        ))}
     </div>
   );
 }
