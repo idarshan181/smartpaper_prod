@@ -14,10 +14,10 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useState } from 'react';
+import Resizer from 'react-image-file-resizer';
 
 import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
-import Resizer from 'react-image-file-resizer';
 
 import { CSFTestNames } from '@/data/csf';
 
@@ -32,7 +32,6 @@ import ImageViewer from '@/styles/ImageViewer';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
-import Compressor from 'compressorjs';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -48,7 +47,7 @@ const resizeFile = file =>
       },
       'file',
       720,
-      1280      
+      1280
     );
   });
 export default function CSFTest() {
@@ -100,7 +99,6 @@ export default function CSFTest() {
         isClearDisabled: true
       }));
     } else {
-      
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
@@ -109,12 +107,12 @@ export default function CSFTest() {
           .then(res => {
             console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
-            setState((prevState) => ({
+            setState(prevState => ({
               ...prevState,
               imageSource: [...prevState.imageSource, blob],
               testImages: [...prevState.testImages, res]
-            }))
-            console.log("result from image resizer: - ", res);
+            }));
+            console.log('result from image resizer: - ', res);
           })
           .catch(err => console.log(err));
       });
