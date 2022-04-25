@@ -40,8 +40,8 @@ const resizeFile = file =>
       file, //file name
       1600, //max width
       1600, //ht
-      'jpeg', //format
-      90, //quality
+      'webp', //format
+      85, //quality
       0, //rotation
       uri => {
         resolve(uri);
@@ -103,54 +103,32 @@ export default function CSFTest() {
       
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
-      // fileList.map((file, id) => {
-      //   console.log(`original -${id}`, file);
-      //   new Compressor(file, {
-      //     quality: 0.9,
-      //     success: (res)=> {
-      //       console.log(res);
-      //     }
-      //   })
-      // });
-      //
-      // compressor
-      //(fileList)
-      //
-      fileList.map((file, id) => {
+
+      fileList.map(async (file, id) => {
         console.log(`original-${id}`, file);
-        /* const out = resizeFile(file);
-        console.log(out);
-        final.push(out); */
-        resizeFile(file)
+
+        await resizeFile(file)
           .then(res => {
             console.log(`using image resizer-${id}`, res);
-            // final.push(res);
+            const blob = URL.createObjectURL(res);
+            setState((prevState) => ({
+              ...prevState,
+              imageSource: [...prevState.imageSource, blob],
+              testImages: [...prevState.testImages, res]
+            }))
+            console.log("result from image resizer: - ", res);
           })
           .catch(err => console.log(err));
       });
 
-      const resImg = fileList.map((file , id) => {
-        resizeFile(file);
-      });
-      const source = await Promise.all(
-        fileList.map(async file =>
-          {
-          // resizeFile(file),
-            console.log(file);
-            URL.createObjectURL(file);
-          }
-          // })
-    )
-      );
+      
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
       //note: testImages will be sent to backend
       setState(prevState => ({
         ...prevState,
-        testImages: [...prevState.testImages, ...files],
         imageAdded: true,
         resultFetched: false,
-        imageSource: [...prevState.imageSource, ...source],
         imageLabel: 'Your Work',
         isDisabled: false,
         isClearDisabled: false
