@@ -103,10 +103,8 @@ export default function CSFTest() {
       
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
-
       fileList.map(async (file, id) => {
         console.log(`original-${id}`, file);
-
         await resizeFile(file)
           .then(res => {
             console.log(`using image resizer-${id}`, res);
@@ -120,8 +118,6 @@ export default function CSFTest() {
           })
           .catch(err => console.log(err));
       });
-
-      
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
       //note: testImages will be sent to backend
