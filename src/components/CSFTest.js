@@ -357,7 +357,6 @@ export default function CSFTest() {
                       src={source}
                       width={350}
                       height={500}
-                      loading="eager"
                       alt={`output-${index}`}
                     />
                   ))
