@@ -71,7 +71,7 @@ export default function CSFTest() {
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
-    testName: '',
+    testName: 'Demo MCQ 1',
     rollNo: '',
     grade: '',
     subject: ''
@@ -133,7 +133,6 @@ export default function CSFTest() {
     e.preventDefault();
     // document.getElementById("image-input").value = "";
     resetForm();
-    clearForm();
     state.inputImage.current.value = '';
 
     setState(prevState => ({
@@ -210,6 +209,7 @@ export default function CSFTest() {
             isDisabled: false,
             isClearDisabled: false
           }));
+          window.scrollTo(0, 0);
           setTimeout(() => {
             setState(prevState => ({
               ...prevState,
@@ -218,7 +218,7 @@ export default function CSFTest() {
                 message: ''
               }
             }));
-          }, 4000);
+          }, 60000);
         }
       })
       .catch(err => {
@@ -229,13 +229,14 @@ export default function CSFTest() {
           loadingMessage: '',
           isError: true,
           error: {
-            message: 'Error in fetching results, please try again'
+            message: err.response.data.detail
           },
           resultFetched: false,
           imageLabel: '',
           isDisabled: false,
           isClearDisabled: false
         }));
+        window.scrollTo(0, 0);
         setTimeout(() => {
           setState(prevState => ({
             ...prevState,
@@ -244,7 +245,7 @@ export default function CSFTest() {
               message: ''
             }
           }));
-        }, 4000);
+        }, 60000);
       });
   };
 
@@ -380,6 +381,7 @@ export default function CSFTest() {
                       src={source}
                       width={350}
                       height={500}
+                      loading="eager"
                       alt={`output-${index}`}
                     />
                   ))
