@@ -102,6 +102,7 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
+        let startTime = performance.now();
         console.log(`original-${id}`, file);
         await resizeFile(file)
           .then(res => {
@@ -113,6 +114,8 @@ export default function CSFTest() {
               testImages: [...prevState.testImages, res]
             }));
             console.log('result from image resizer: - ', res);
+            let endTime = performance.now();
+            console.log(`call to reduce image took ${endTime - startTime} milliseconds`);
           })
           .catch(err => console.log(err));
       });
