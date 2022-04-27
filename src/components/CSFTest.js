@@ -102,10 +102,8 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
-        console.log(`original-${id}`, file);
         await resizeFile(file)
           .then(res => {
-            console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
             setState(prevState => ({
               ...prevState,
@@ -173,7 +171,6 @@ export default function CSFTest() {
       subject
     )
       .then(response => {
-        console.log({ response });
         const {
           output_res,
           input_res,
