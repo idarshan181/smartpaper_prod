@@ -14,6 +14,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useState } from 'react';
+import Resizer from 'react-image-file-resizer';
 
 import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
@@ -32,6 +33,23 @@ import ImageViewer from '@/styles/ImageViewer';
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
 
+const resizeFile = file =>
+  new Promise(resolve => {
+    Resizer.imageFileResizer(
+      file, //file name
+      1600, //max width
+      1600, //ht
+      'webp', //format
+      90, //quality
+      0, //rotation
+      uri => {
+        resolve(uri);
+      },
+      'file',
+      720,
+      1280
+    );
+  });
 export default function CSFTest() {
   const [state, setState] = useState({
     orgName: 'CSF',
@@ -83,22 +101,27 @@ export default function CSFTest() {
     } else {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
-      //
-      // compressor
-      //(fileList)
-      //
-      const source = await Promise.all(
-        fileList.map(async file => URL.createObjectURL(file))
-      );
+      fileList.map(async (file, id) => {
+        console.log(`original-${id}`, file);
+        await resizeFile(file)
+          .then(res => {
+            console.log(`using image resizer-${id}`, res);
+            const blob = URL.createObjectURL(res);
+            setState(prevState => ({
+              ...prevState,
+              imageSource: [...prevState.imageSource, blob],
+              testImages: [...prevState.testImages, res]
+            }));
+          })
+          .catch(err => console.log(err));
+      });
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
       //note: testImages will be sent to backend
       setState(prevState => ({
         ...prevState,
-        testImages: [...prevState.testImages, ...files],
         imageAdded: true,
         resultFetched: false,
-        imageSource: [...prevState.imageSource, ...source],
         imageLabel: 'Your Work',
         isDisabled: false,
         isClearDisabled: false
