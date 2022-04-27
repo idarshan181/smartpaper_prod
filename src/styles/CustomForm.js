@@ -68,7 +68,7 @@ const CustomLabel = ({ id, children, required, ...props }) => {
       {children}
       {required ? <span sx={{ fontWeight: 'light' }}> *</span> : ''}
     </InputLabel>
-  ); 
+  );
 };
 
 const CustomButton = styled(Button)(() => ({
