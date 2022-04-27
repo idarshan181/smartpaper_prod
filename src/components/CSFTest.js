@@ -37,10 +37,10 @@ const resizeFile = file =>
   new Promise(resolve => {
     Resizer.imageFileResizer(
       file, //file name
-      1600, //max width
-      1600, //ht
-      'webp', //format
-      90, //quality
+      720, //max width
+      1280, //ht
+      'jpeg', //format
+      50, //quality
       0, //rotation
       uri => {
         resolve(uri);
@@ -102,8 +102,10 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
+        console.log(`original-${id}`, file);
         await resizeFile(file)
           .then(res => {
+            console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
             setState(prevState => ({
               ...prevState,
@@ -171,6 +173,7 @@ export default function CSFTest() {
       subject
     )
       .then(response => {
+        console.log({ response });
         const {
           output_res,
           input_res,
@@ -377,6 +380,8 @@ export default function CSFTest() {
                       src={source}
                       width={350}
                       height={500}
+                      layout="responsive"
+                      objectFit="contain"
                       alt={`output-${index}`}
                     />
                   ))
