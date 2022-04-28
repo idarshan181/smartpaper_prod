@@ -33,25 +33,28 @@ export class ImageQueue {
     this.addToQueue(this.images);
   }
 
-  addToQueue() {
-    for (const i = 0; i < this.totalRequests; i++) {
+  addToQueue = () => {
+    this.images.forEach(image => {
       this.scanRequests.push(
         getScanResult(
           this.testName,
-          [this.images[i]],
+          image,
           this.orgName,
           this.school,
           this.grade,
           this.rollNo,
           this.subject
         )
-        // i
       );
-      console.log("this.scanRequests.length",this.scanRequests.length)
-    }
-    console.log("scan request array: - ",this.scanRequests, "image file", this.images);
+    });
+    console.log(
+      'scan request array: - ',
+      this.scanRequests,
+      'image file',
+      this.images
+    );
     this.processParallel(this.scanRequests);
-  }
+  };
 
   async processParallel(scanRequests) {
     await Promise.all(scanRequests).then(response => {
