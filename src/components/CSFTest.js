@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { createRef, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
+import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
 import { CSFTestNames } from '@/data/csf';
@@ -31,7 +32,6 @@ import ImageViewer from '@/styles/ImageViewer';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
-import { ImageQueue } from './QueueClass';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -67,8 +67,7 @@ export default function CSFTest() {
     testImages: [],
     isDisabled: true,
     isClearDisabled: true,
-    inputImage: createRef(),
-    resultImages: []
+    inputImage: createRef()
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -148,38 +147,9 @@ export default function CSFTest() {
       error: {
         message: ''
       },
-      resultImages: [],
       loading: false,
       loadingMessage: ''
     }));
-  };
-
-  const updateState = (res, requestId) => {
-    console.log(
-      `Res from queue class - ${requestId}`,
-      res,
-      new Date().toLocaleTimeString('en-US')
-    );
-
-    setState(prevState => ({
-      ...prevState,
-      loading: false,
-      loadingMessage: '',
-      imageLabel: 'Your Result',
-      resultImages: [...prevState.resultImages, ...res.data.data.output_res],
-      isDisabled: true,
-      isClearDisabled: false,
-      testImages: [],
-      resultFetched: true
-    }));
-  };
-
-  const handleError = (err, requestId) => {
-    console.log(
-      `Error from queue class - ${requestId}`,
-      err,
-      new Date().toLocaleTimeString('en-US')
-    );
   };
   const handleSubmit = async e => {
     e.preventDefault();
@@ -190,32 +160,10 @@ export default function CSFTest() {
       ...prevState,
       isDisabled: true,
       isClearDisabled: true,
-      resultImages: [],
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    const imageQ = new ImageQueue(
-      testName,
-      testImages,
-      orgName,
-      school,
-      grade,
-      rollNo,
-      subject,
-      updateState,
-      handleError
-    );
-    imageQ.start();
-    setTimeout(() => {
-      setState(prevState => ({
-        ...prevState,
-        isDisabled: true,
-        isClearDisabled: true,
-        loading: false,
-        loadingMessage: ''
-      }));
-    }, 6000);
-    /* await getScanResult(
+    await getScanResult(
       testName,
       testImages,
       orgName,
@@ -297,7 +245,7 @@ export default function CSFTest() {
             }
           }));
         }, 60000);
-      }); */
+      });
   };
 
   return (
@@ -425,7 +373,7 @@ export default function CSFTest() {
                 </Typography>
               )}
               {state.resultFetched
-                ? state.resultImages.map((source, index) => (
+                ? state.imageSource.map((source, index) => (
                     <Image
                       className="outputImage"
                       key={index}
@@ -435,8 +383,6 @@ export default function CSFTest() {
                       layout="responsive"
                       objectFit="contain"
                       alt={`output-${index}`}
-                      loading="eager"
-                      priority
                     />
                   ))
                 : state.imageSource.map((source, index) => (
@@ -461,7 +407,6 @@ export default function CSFTest() {
               id="testImages"
               name="testImages"
               type="file"
-              multiple
               ref={state.inputImage}
               aria-label="Select photo(s)"
               onChange={handleFileChange}
