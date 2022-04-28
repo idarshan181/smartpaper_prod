@@ -38,7 +38,7 @@ export class ImageQueue {
       this.scanRequests.push(
         getScanResult(
           this.testName,
-          image,
+          [image],
           this.orgName,
           this.school,
           this.grade,
@@ -53,13 +53,23 @@ export class ImageQueue {
       'image file',
       this.images
     );
+
     this.processParallel(this.scanRequests);
   };
 
   async processParallel(scanRequests) {
-    await Promise.all(scanRequests).then(response => {
-      console.log(response);
-      dispatchEvent(ImageQueue.COMPLETE);
+    const start = performance.now();
+    scanRequests.forEach(async (request, id) => {
+      await request.then(response => {
+        console.log(`Response - ${id}`, response);
+      });
     });
+
+    /* await Promise.all(scanRequests).then(response => {
+      console.log(response);
+      // dispatchEvent(ImageQueue.COMPLETE);
+    }); */
+    const end = performance.now();
+    console.log(`Time taken ${end - start}`);
   }
 }
