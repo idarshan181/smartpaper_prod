@@ -16,7 +16,6 @@ import Image from 'next/image';
 import { createRef, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
-import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
 import { CSFTestNames } from '@/data/csf';
@@ -32,6 +31,7 @@ import ImageViewer from '@/styles/ImageViewer';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
+import { ImageQueue } from './QueueClass';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -163,7 +163,26 @@ export default function CSFTest() {
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    await getScanResult(
+    const imageQ = new ImageQueue(
+      testName,
+      testImages,
+      orgName,
+      school,
+      grade,
+      rollNo,
+      subject
+    );
+    imageQ.start();
+    setTimeout(() => {
+      setState(prevState => ({
+        ...prevState,
+        isDisabled: true,
+        isClearDisabled: true,
+        loading: false,
+        loadingMessage: ''
+      }));
+    }, 6000);
+    /* await getScanResult(
       testName,
       testImages,
       orgName,
@@ -245,7 +264,7 @@ export default function CSFTest() {
             }
           }));
         }, 60000);
-      });
+      }); */
   };
 
   return (
