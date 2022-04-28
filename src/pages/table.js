@@ -1,4 +1,4 @@
-import MockTable from "@/components/MockTable";
+import MockTable from '@/components/MockTable';
 
 export default function Tablepage() {
   return <MockTable />;
