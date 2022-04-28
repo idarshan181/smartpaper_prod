@@ -36,8 +36,6 @@ export class ImageQueue {
     this.subject = subject;
     this.successFn = successCallback;
     this.failureFn = failureCallback;
-    const totalImages = testImages.length;
-    console.log('my class in queue class', totalImages);
   }
 
   start() {
@@ -59,12 +57,7 @@ export class ImageQueue {
         )
       );
     });
-    console.log(
-      'scan request array: - ',
-      this.scanRequests,
-      'image file',
-      this.images
-    );
+    console.log('scan request array: - ', this.scanRequests);
 
     this.processParallel(this.scanRequests);
   };
