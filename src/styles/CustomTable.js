@@ -28,7 +28,7 @@ export const CustomTable = styled.div`
       background: green;
       border-bottom: 3px solid blue;
       color: white;
-      fontweight: bold;
+      font-weight: bold;
     }
   }
 `;
