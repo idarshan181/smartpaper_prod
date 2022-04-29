@@ -67,7 +67,8 @@ export default function CSFTest() {
     testImages: [],
     isDisabled: true,
     isClearDisabled: true,
-    inputImage: createRef()
+    inputImage: createRef(),
+    resultImages: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -147,9 +148,38 @@ export default function CSFTest() {
       error: {
         message: ''
       },
+      resultImages: [],
       loading: false,
       loadingMessage: ''
     }));
+  };
+
+  const updateState = (res, requestId) => {
+    console.log(
+      `Res from queue class - ${requestId}`,
+      res,
+      new Date().toLocaleTimeString('en-US')
+    );
+
+    setState(prevState => ({
+      ...prevState,
+      loading: false,
+      loadingMessage: '',
+      imageLabel: 'Your Result',
+      resultImages: [...prevState.resultImages, ...res.data.data.output_res],
+      isDisabled: true,
+      isClearDisabled: false,
+      testImages: [],
+      resultFetched: true
+    }));
+  };
+
+  const handleError = (err, requestId) => {
+    console.log(
+      `Error from queue class - ${requestId}`,
+      err,
+      new Date().toLocaleTimeString('en-US')
+    );
   };
   const handleSubmit = async e => {
     e.preventDefault();
@@ -160,6 +190,7 @@ export default function CSFTest() {
       ...prevState,
       isDisabled: true,
       isClearDisabled: true,
+      resultImages: [],
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
@@ -170,7 +201,9 @@ export default function CSFTest() {
       school,
       grade,
       rollNo,
-      subject
+      subject,
+      updateState,
+      handleError
     );
     imageQ.start();
     setTimeout(() => {
@@ -392,7 +425,7 @@ export default function CSFTest() {
                 </Typography>
               )}
               {state.resultFetched
-                ? state.imageSource.map((source, index) => (
+                ? state.resultImages.map((source, index) => (
                     <Image
                       className="outputImage"
                       key={index}
@@ -402,6 +435,8 @@ export default function CSFTest() {
                       layout="responsive"
                       objectFit="contain"
                       alt={`output-${index}`}
+                      loading="eager"
+                      priority
                     />
                   ))
                 : state.imageSource.map((source, index) => (
@@ -426,6 +461,7 @@ export default function CSFTest() {
               id="testImages"
               name="testImages"
               type="file"
+              multiple
               ref={state.inputImage}
               aria-label="Select photo(s)"
               onChange={handleFileChange}

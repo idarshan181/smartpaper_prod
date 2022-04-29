@@ -16,7 +16,17 @@ export class ImageQueue {
   processedRequests = 0;
   totalRequests = undefined;
   scanRequests = [];
-  constructor(testName, testImages, orgName, school, grade, rollNo, subject) {
+  constructor(
+    testName,
+    testImages,
+    orgName,
+    school,
+    grade,
+    rollNo,
+    subject,
+    successCallback,
+    failureCallback
+  ) {
     this.images = testImages;
     this.testName = testName;
     this.orgName = orgName;
@@ -24,6 +34,8 @@ export class ImageQueue {
     this.grade = grade;
     this.rollNo = rollNo;
     this.subject = subject;
+    this.successFn = successCallback;
+    this.failureFn = failureCallback;
     const totalImages = testImages.length;
     console.log('my class in queue class', totalImages);
   }
@@ -59,16 +71,19 @@ export class ImageQueue {
 
   async processParallel(scanRequests) {
     const start = performance.now();
-    scanRequests.forEach(async (request, id) => {
-      await request.then(response => {
-        console.log(`Response - ${id}`, response);
-      });
+    scanRequests.forEach(async request => {
+      await request
+        .then(response => {
+          // console.log(`Response - ${id}`, response);
+          this.processedRequests++;
+          this.successFn(response, this.processedRequests);
+        })
+        .catch(error => {
+          this.processedRequests++;
+          this.failureFn(error, this.processedRequests);
+        });
     });
 
-    /* await Promise.all(scanRequests).then(response => {
-      console.log(response);
-      // dispatchEvent(ImageQueue.COMPLETE);
-    }); */
     const end = performance.now();
     console.log(`Time taken ${end - start}`);
   }
