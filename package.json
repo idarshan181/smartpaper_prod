@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "@iconify/react": "^3.2.1",
-    "commitizen": "^4.2.4",
     "eslint": "^8.14.0",
     "eslint-config-next": "^12.1.5",
     "eslint-plugin-simple-import-sort": "^7.0.0",
