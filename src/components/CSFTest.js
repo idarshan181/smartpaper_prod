@@ -28,13 +28,12 @@ import {
 } from '@/styles/CustomForm';
 import CustomPaper from '@/styles/CustomPaper';
 import ImageViewer from '@/styles/ImageViewer';
-import CustomTable from '@/styles/CustomTable';
+import TableStyles from '@/styles/TableStyles';
 
+import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
-import { Table } from './CustomTable';
-import { Upload } from '@mui/icons-material';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -55,24 +54,18 @@ const resizeFile = file =>
   });
 
 export default function CSFTest() {
-  const upLoad = (img) => {
-    setState(prevState => ([prevState.imgData, img]))
-    document.getElementById("changeImage").click();
-  }
-  const replaceImage = (e) => {
-    console.log(e)
-  }
+
   const columns = useMemo(
     () => [
-      
       {
         Header: 'Correct',
         accessor: 'count_correct',
+        collapse: true,
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
           color: 'deep-green',
-        },
+        }
       },
       {
         Header: 'Incorrect',
@@ -80,17 +73,18 @@ export default function CSFTest() {
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-          color: 'red'
+          color: 'red',
         }
       },
       {
         Header: '% correct',
         accessor: 'pct_correct_checked',
-        Cell: props => props.value+"%",
+        Cell: props => props.value + '%',
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-        },
+          width: '200px',
+        }
       },
       {
         Header: 'Blank',
@@ -98,16 +92,17 @@ export default function CSFTest() {
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-        },
+        }
       },
       {
         Header: '% total correct',
         accessor: 'pct_correct_total',
-        Cell: props => props.value + "%",
+        Cell: props => props.value + '%',
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-        },
+          width: '100px'
+        }
       }
     ],
     []
@@ -131,7 +126,7 @@ export default function CSFTest() {
     ],
     []
   );
-  
+
   const [state, setState] = useState({
     orgName: 'CSF',
     imageLabel: '',
@@ -212,6 +207,16 @@ export default function CSFTest() {
       }));
     }
   };
+  const upLoad = img => {
+    setState(prevState => ({
+      ...prevState,
+      imgData: img
+    }));
+    document.getElementById('changeImage').click();
+  };
+  const replaceImage = e => {
+    console.log(e);
+  };
   const resetData = e => {
     e.preventDefault();
     // document.getElementById("image-input").value = "";
@@ -257,7 +262,7 @@ export default function CSFTest() {
       testResult: [...prevState.testResult, res.data.data.test_result[0]]
     }));
   };
-  const data1 = useMemo(() => state.testResult, [state.testResult])
+  const data1 = useMemo(() => state.testResult, [state.testResult]);
   const handleError = (err, requestId) => {
     console.log(
       `Error from queue class - ${requestId}`,
@@ -409,7 +414,7 @@ export default function CSFTest() {
           justifyContent: 'center'
         }}
       >
-        <CustomPaper elevation={3}>
+        <CustomPaper elevation={3} >
           {state.isError ? <ErrorMessage error={state.error} /> : null}
           <Box
             component="form"
@@ -540,7 +545,12 @@ export default function CSFTest() {
                   ))}
             </ImageViewer>
           )}
-          <input id="changeImage" hidden type="file" onChange={(e) => replaceImage(e)}/>
+          <input
+            id="changeImage"
+            hidden
+            type="file"
+            onChange={e => replaceImage(e)}
+          />
           <label htmlFor="testImages" style={{ alignSelf: 'center' }}>
             <Input
               accept="image/*"
@@ -590,19 +600,25 @@ export default function CSFTest() {
             Submit
           </CustomButton>
           {state.resultFetched && (
-            <div>
-            <CustomTable>
-              <Table columns={columns} data={data1} getHeaderProps={column => ({
-                style:{
-                  color: "black",
-                }
-              })}
+            <TableStyles>
+              <Table
+                columns={columns}
+                data={data1}
+                getHeaderProps={column => ({
+                  style: {
+                    color: 'black'
+                  }
+                })}
+                style = {{
+                  width: '50px',
+                }}
               />
-            </CustomTable>
-            </div>
+            </TableStyles>
           )}
         </CustomPaper>
+        
       </Box>
+      
     </Container>
   );
 }
