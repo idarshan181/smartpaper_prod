@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import { createRef, useState } from 'react';
+import { createRef, useMemo, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
 import useForm from '@/libs/useForm';
@@ -28,10 +28,13 @@ import {
 } from '@/styles/CustomForm';
 import CustomPaper from '@/styles/CustomPaper';
 import ImageViewer from '@/styles/ImageViewer';
+import CustomTable from '@/styles/CustomTable';
 
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
+import { Table } from './CustomTable';
+import { Upload } from '@mui/icons-material';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -50,7 +53,85 @@ const resizeFile = file =>
       1280
     );
   });
+
 export default function CSFTest() {
+  const upLoad = (img) => {
+    setState(prevState => ([prevState.imgData, img]))
+    document.getElementById("changeImage").click();
+  }
+  const replaceImage = (e) => {
+    console.log(e)
+  }
+  const columns = useMemo(
+    () => [
+      
+      {
+        Header: 'Correct',
+        accessor: 'count_correct',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          color: 'deep-green',
+        },
+      },
+      {
+        Header: 'Incorrect',
+        accessor: 'count_incorrect',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          color: 'red'
+        }
+      },
+      {
+        Header: '% correct',
+        accessor: 'pct_correct_checked',
+        Cell: props => props.value+"%",
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+        },
+      },
+      {
+        Header: 'Blank',
+        accessor: 'count_blank',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+        },
+      },
+      {
+        Header: '% total correct',
+        accessor: 'pct_correct_total',
+        Cell: props => props.value + "%",
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+        },
+      }
+    ],
+    []
+  );
+  const data = useMemo(
+    () => [
+      {
+        count_blank: 1,
+        count_correct: 3,
+        count_incorrect: 9,
+        pct_correct_checked: 25,
+        pct_correct_total: 23.1
+      },
+      {
+        count_blank: 2,
+        count_correct: 5,
+        count_incorrect: 3,
+        pct_correct_checked: 40,
+        pct_correct_total: 40.1
+      }
+    ],
+    []
+  );
+  
   const [state, setState] = useState({
     orgName: 'CSF',
     imageLabel: '',
@@ -68,7 +149,9 @@ export default function CSFTest() {
     isDisabled: true,
     isClearDisabled: true,
     inputImage: createRef(),
-    resultImages: []
+    resultImages: [],
+    testResult: [],
+    imgData: null,
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -103,10 +186,10 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
-        console.log(`original-${id}`, file);
+        // console.log(`original-${id}`, file);
         await resizeFile(file)
           .then(res => {
-            console.log(`using image resizer-${id}`, res);
+            // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
             setState(prevState => ({
               ...prevState,
@@ -150,7 +233,8 @@ export default function CSFTest() {
       },
       resultImages: [],
       loading: false,
-      loadingMessage: ''
+      loadingMessage: '',
+      testResult: []
     }));
   };
 
@@ -160,7 +244,6 @@ export default function CSFTest() {
       res,
       new Date().toLocaleTimeString('en-US')
     );
-
     setState(prevState => ({
       ...prevState,
       loading: false,
@@ -170,10 +253,11 @@ export default function CSFTest() {
       isDisabled: true,
       isClearDisabled: false,
       testImages: [],
-      resultFetched: true
+      resultFetched: true,
+      testResult: [...prevState.testResult, res.data.data.test_result[0]]
     }));
   };
-
+  const data1 = useMemo(() => state.testResult, [state.testResult])
   const handleError = (err, requestId) => {
     console.log(
       `Error from queue class - ${requestId}`,
@@ -437,6 +521,7 @@ export default function CSFTest() {
                       alt={`output-${index}`}
                       loading="eager"
                       priority
+                      onClick={() => upLoad(source)}
                     />
                   ))
                 : state.imageSource.map((source, index) => (
@@ -455,6 +540,7 @@ export default function CSFTest() {
                   ))}
             </ImageViewer>
           )}
+          <input id="changeImage" hidden type="file" onChange={(e) => replaceImage(e)}/>
           <label htmlFor="testImages" style={{ alignSelf: 'center' }}>
             <Input
               accept="image/*"
@@ -503,6 +589,18 @@ export default function CSFTest() {
           >
             Submit
           </CustomButton>
+          {state.resultFetched && (
+            <div>
+            <CustomTable>
+              <Table columns={columns} data={data1} getHeaderProps={column => ({
+                style:{
+                  color: "black",
+                }
+              })}
+              />
+            </CustomTable>
+            </div>
+          )}
         </CustomPaper>
       </Box>
     </Container>
