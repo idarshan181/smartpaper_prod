@@ -84,6 +84,8 @@ export default function CSFTest() {
           // fontWeight: 'bolder',
           fontSize: '13px',
           width: '200px',
+          maxWidth: 400,
+          minWidth:140,
         }
       },
       {
@@ -92,6 +94,9 @@ export default function CSFTest() {
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
+          maxWidth: 400,
+          minWidth:140,
+          textAlign: 'center'
         }
       },
       {
@@ -101,9 +106,35 @@ export default function CSFTest() {
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-          width: '100px'
+          width: '100px',
+          maxWidth: 400,
+          minWidth:140,
         }
-      }
+      },
+      // {
+      //   Header: '% total correct',
+      //   accessor: 'pct_correct_total1',
+      //   Cell: props => props.value + '%',
+      //   style: {
+      //     // fontWeight: 'bolder',
+      //     fontSize: '13px',
+      //     width: '100px',
+      //     maxWidth: 400,
+      //     minWidth:140,
+      //   }
+      // },
+      // {
+      //   Header: '% total correct',
+      //   accessor: 'pct_correct_total2',
+      //   Cell: props => props.value + '%',
+      //   style: {
+      //     // fontWeight: 'bolder',
+      //     fontSize: '13px',
+      //     width: '100px',
+      //     maxWidth: 400,
+      //     minWidth:140,
+      //   }
+      // }
     ],
     []
   );
@@ -114,15 +145,19 @@ export default function CSFTest() {
         count_correct: 3,
         count_incorrect: 9,
         pct_correct_checked: 25,
-        pct_correct_total: 23.1
+        pct_correct_total: 23.1,
+        pct_correct_total1: 23.1,
+        pct_correct_total2: 23.1
       },
       {
         count_blank: 2,
         count_correct: 5,
         count_incorrect: 3,
         pct_correct_checked: 40,
-        pct_correct_total: 40.1
-      }
+        pct_correct_total: 40.1,
+        pct_correct_total1: 40.1,
+        pct_correct_total2: 40.1,
+      },
     ],
     []
   );
@@ -182,15 +217,20 @@ export default function CSFTest() {
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
         // console.log(`original-${id}`, file);
+        const imgObj = {}
         await resizeFile(file)
           .then(res => {
             // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
+            imgObj["id"] = Math.floor(Math.random()* 10000);
+            imgObj["blob"] = blob;
+            imgObj["res"] = res;
             setState(prevState => ({
               ...prevState,
-              imageSource: [...prevState.imageSource, blob],
-              testImages: [...prevState.testImages, res]
+              imageSource: [...prevState.imageSource, imgObj.blob], //.blob
+              testImages: [...prevState.testImages, imgObj.res] //.res
             }));
+            console.log("image object 2- :", imgObj);
           })
           .catch(err => console.log(err));
       });
@@ -212,7 +252,8 @@ export default function CSFTest() {
       ...prevState,
       imgData: img
     }));
-    document.getElementById('changeImage').click();
+    console.log("image obj: - ",img)
+    // document.getElementById('changeImage').click();
   };
   const replaceImage = e => {
     console.log(e);
@@ -541,6 +582,7 @@ export default function CSFTest() {
                       layout="responsive"
                       objectFit="contain"
                       className="outputImage"
+                      onClick={() => upLoad(source)}
                     />
                   ))}
             </ImageViewer>
@@ -606,15 +648,15 @@ export default function CSFTest() {
                 data={data1}
                 getHeaderProps={column => ({
                   style: {
-                    color: 'black'
+                    color: 'white'
                   }
                 })}
-                style = {{
-                  width: '50px',
-                }}
+                // style = {{
+                //   // width: '50px',
+                // }}
               />
             </TableStyles>
-          )}
+           )}
         </CustomPaper>
         
       </Box>
