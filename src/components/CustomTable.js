@@ -2,7 +2,6 @@
 import { useSortBy, useTable } from 'react-table';
 
 import TableStyles from '@/styles/TableStyles';
-// import { useSortBy } from "react-table/dist/react-table.development";
 
 const defaultPropGetter = () => ({});
 export const Table = ({
@@ -23,49 +22,57 @@ export const Table = ({
     );
   return (
     <TableStyles>
-      <div className='tableWrap'>
-      <table {...getTableProps}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps([column.getSortByToggleProps(), {
-                  className: column.className,
-                  style: column.style
-                },
-                getColumnprops(column),
-                getHeaderProps(column
-                )])}>
-                  {column.render('Header')}
-                  {column.isSorted ? (column.isSortedDesc ? '↓' : '↑') : ''}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps(getRowProps(row))}>
-                {row.cells.map(cell => {
-                  return (
-                    <td {...cell.getCellProps([
+      <div className="tableWrap">
+        <table {...getTableProps}>
+          <thead>
+            {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                  <th
+                    {...column.getHeaderProps([
+                      column.getSortByToggleProps(),
                       {
-                        className: cell.column.className,
-                        style: cell.column.style
+                        className: column.className,
+                        style: column.style
                       },
-                      getColumnprops(cell.column),
-                      getCellProps(cell)
-                    ])}>{cell.render('Cell')}</td>
-                  );
-                })}
+                      getColumnprops(column),
+                      getHeaderProps(column)
+                    ])}
+                  >
+                    {column.render('Header')}
+                    {column.isSorted ? (column.isSortedDesc ? '↓' : '↑') : ''}
+                  </th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map(row => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps(getRowProps(row))}>
+                  {row.cells.map(cell => {
+                    return (
+                      <td
+                        {...cell.getCellProps([
+                          {
+                            className: cell.column.className,
+                            style: cell.column.style
+                          },
+                          getColumnprops(cell.column),
+                          getCellProps(cell)
+                        ])}
+                      >
+                        {cell.render('Cell')}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-      </TableStyles>
+    </TableStyles>
   );
 };
