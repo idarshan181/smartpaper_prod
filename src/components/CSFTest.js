@@ -54,75 +54,94 @@ const resizeFile = file =>
   });
 
 export default function CSFTest() {
-
   const columns = useMemo(
     () => [
       {
+        Header: 'No.',
+        id: 'row',
+        maxWidth: 50,
+        filterable: false,
+        Cell: row => {
+          return <div>{row[0]}</div>;
+        },
+        style: {
+          fontSize: '13px'
+        }
+      },
+      {
         Header: 'Correct',
-        accessor: 'count_correct',
+        accessor: row => row[0].count_correct,
+        // console.log("row",row[0].count_correct)
         collapse: true,
         style: {
-          // fontWeight: 'bolder',
           fontSize: '13px',
-          color: 'deep-green',
+          color: 'green'
         }
       },
       {
         Header: 'Incorrect',
-        accessor: 'count_incorrect',
+        accessor: row => row[0].count_incorrect,
+        collapse: true,
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
-          color: 'red',
+          color: 'red'
         }
       },
       {
         Header: '% correct',
-        accessor: 'pct_correct_checked',
+        accessor: row => row[0].pct_correct_checked,
         Cell: props => props.value + '%',
+        collapse: true,
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
           width: '200px',
           maxWidth: 400,
-          minWidth:140,
+          minWidth: 100
         }
       },
       {
         Header: 'Blank',
-        accessor: 'count_blank',
+        accessor: row => row[0].count_blank,
+        collapse: true,
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
           maxWidth: 400,
-          minWidth:140,
+          minWidth: 80,
           textAlign: 'center'
         }
       },
       {
         Header: '% total correct',
-        accessor: 'pct_correct_total',
+        collapse: true,
+        accessor: row => row[0].pct_correct_total,
         Cell: props => props.value + '%',
+        style: {
+          fontSize: '13px',
+          width: '100px',
+          maxWidth: 400,
+          minWidth: 120
+        }
+      },
+      {
+        Header: 'Result Img Link',
+        accessor: row => row[1],
+        Cell: e => (
+          <a href={e.value} target="_blank" rel="noreferrer">
+            {' '}
+            {e.value}{' '}
+          </a>
+        ),
         style: {
           // fontWeight: 'bolder',
           fontSize: '13px',
           width: '100px',
-          maxWidth: 400,
-          minWidth:140,
+          maxWidth: 1000,
+          minWidth: 720
         }
-      },
-      // {
-      //   Header: '% total correct',
-      //   accessor: 'pct_correct_total1',
-      //   Cell: props => props.value + '%',
-      //   style: {
-      //     // fontWeight: 'bolder',
-      //     fontSize: '13px',
-      //     width: '100px',
-      //     maxWidth: 400,
-      //     minWidth:140,
-      //   }
-      // },
+      }
       // {
       //   Header: '% total correct',
       //   accessor: 'pct_correct_total2',
@@ -138,7 +157,7 @@ export default function CSFTest() {
     ],
     []
   );
-  const data = useMemo(
+  const tempData = useMemo(
     () => [
       {
         count_blank: 1,
@@ -156,8 +175,8 @@ export default function CSFTest() {
         pct_correct_checked: 40,
         pct_correct_total: 40.1,
         pct_correct_total1: 40.1,
-        pct_correct_total2: 40.1,
-      },
+        pct_correct_total2: 40.1
+      }
     ],
     []
   );
@@ -181,7 +200,7 @@ export default function CSFTest() {
     inputImage: createRef(),
     resultImages: [],
     testResult: [],
-    imgData: null,
+    imgData: null
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -217,20 +236,20 @@ export default function CSFTest() {
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
         // console.log(`original-${id}`, file);
-        const imgObj = {}
+        const imgObj = {};
         await resizeFile(file)
           .then(res => {
             // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
-            imgObj["id"] = Math.floor(Math.random()* 10000);
-            imgObj["blob"] = blob;
-            imgObj["res"] = res;
+            imgObj['id'] = Math.floor(Math.random() * 10000);
+            imgObj['blob'] = blob;
+            imgObj['res'] = res;
             setState(prevState => ({
               ...prevState,
               imageSource: [...prevState.imageSource, imgObj.blob], //.blob
               testImages: [...prevState.testImages, imgObj.res] //.res
             }));
-            console.log("image object 2- :", imgObj);
+            console.log('image object 2- :', imgObj);
           })
           .catch(err => console.log(err));
       });
@@ -252,7 +271,8 @@ export default function CSFTest() {
       ...prevState,
       imgData: img
     }));
-    console.log("image obj: - ",img)
+    // console.log("image obj: - ",img)
+    console.log('test result', state.testResult[0]);
     // document.getElementById('changeImage').click();
   };
   const replaceImage = e => {
@@ -290,6 +310,7 @@ export default function CSFTest() {
       res,
       new Date().toLocaleTimeString('en-US')
     );
+    // console.log("test result: ", res.data.data.test_result[0], "output result image: ",res.data.data.output_res);
     setState(prevState => ({
       ...prevState,
       loading: false,
@@ -300,10 +321,13 @@ export default function CSFTest() {
       isClearDisabled: false,
       testImages: [],
       resultFetched: true,
-      testResult: [...prevState.testResult, res.data.data.test_result[0]]
+      testResult: [
+        ...prevState.testResult,
+        [...res.data.data.test_result, ...res.data.data.output_res]
+      ]
     }));
   };
-  const data1 = useMemo(() => state.testResult, [state.testResult]);
+  const data = useMemo(() => state.testResult, [state.testResult]);
   const handleError = (err, requestId) => {
     console.log(
       `Error from queue class - ${requestId}`,
@@ -455,7 +479,7 @@ export default function CSFTest() {
           justifyContent: 'center'
         }}
       >
-        <CustomPaper elevation={3} >
+        <CustomPaper elevation={3}>
           {state.isError ? <ErrorMessage error={state.error} /> : null}
           <Box
             component="form"
@@ -555,21 +579,22 @@ export default function CSFTest() {
                 </Typography>
               )}
               {state.resultFetched
-                ? state.resultImages.map((source, index) => (
-                    <Image
-                      className="outputImage"
-                      key={index}
-                      src={source}
-                      width={350}
-                      height={500}
-                      layout="responsive"
-                      objectFit="contain"
-                      alt={`output-${index}`}
-                      loading="eager"
-                      priority
-                      onClick={() => upLoad(source)}
-                    />
-                  ))
+                ? // state.resultImages.map((source, index) => (
+                  //     <Image
+                  //       className="outputImage"
+                  //       key={index}
+                  //       src={source}
+                  //       width={350}
+                  //       height={500}
+                  //       layout="responsive"
+                  //       objectFit="contain"
+                  //       alt={`output-${index}`}
+                  //       loading="eager"
+                  //       priority
+                  //       onClick={() => upLoad(source)}
+                  //     />
+                  //   ))
+                  console.log('output received')
                 : state.imageSource.map((source, index) => (
                     <Image
                       src={source}
@@ -645,7 +670,7 @@ export default function CSFTest() {
             <TableStyles>
               <Table
                 columns={columns}
-                data={data1}
+                data={data}
                 getHeaderProps={column => ({
                   style: {
                     color: 'white'
@@ -656,11 +681,9 @@ export default function CSFTest() {
                 // }}
               />
             </TableStyles>
-           )}
+          )}
         </CustomPaper>
-        
       </Box>
-      
     </Container>
   );
 }
