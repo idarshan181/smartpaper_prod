@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
+import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
 import { CSFTestNames } from '@/data/csf';
@@ -33,7 +34,6 @@ import TableStyles from '@/styles/TableStyles';
 import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
-import { ImageQueue } from './QueueClass';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -276,7 +276,6 @@ export default function CSFTest() {
       error: {
         message: ''
       },
-      resultImages: [],
       loading: false,
       loadingMessage: '',
       testResult: []
@@ -319,32 +318,10 @@ export default function CSFTest() {
       ...prevState,
       isDisabled: true,
       isClearDisabled: true,
-      resultImages: [],
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    const imageQ = new ImageQueue(
-      testName,
-      testImages,
-      orgName,
-      school,
-      grade,
-      rollNo,
-      subject,
-      updateState,
-      handleError
-    );
-    imageQ.start();
-    setTimeout(() => {
-      setState(prevState => ({
-        ...prevState,
-        isDisabled: true,
-        isClearDisabled: true,
-        loading: false,
-        loadingMessage: ''
-      }));
-    }, 6000);
-    /* await getScanResult(
+    await getScanResult(
       testName,
       testImages,
       orgName,
@@ -426,7 +403,7 @@ export default function CSFTest() {
             }
           }));
         }, 60000);
-      }); */
+      });
   };
 
   return (
@@ -554,7 +531,7 @@ export default function CSFTest() {
                 </Typography>
               )}
               {state.resultFetched
-                ? state.resultImages.map((source, index) => (
+                ? state.imageSource.map((source, index) => (
                     <Image
                       className="outputImage"
                       key={index}
@@ -598,7 +575,6 @@ export default function CSFTest() {
               id="testImages"
               name="testImages"
               type="file"
-              multiple
               ref={state.inputImage}
               aria-label="Select photo(s)"
               onChange={handleFileChange}
