@@ -62,7 +62,8 @@ export default function CSFTest() {
         maxWidth: 50,
         filterable: false,
         Cell: row => {
-          return <div>{row[0]}</div>;
+          console.log("row :",row)
+          return <div>{row.row.index+1}</div>;
         },
         style: {
           fontSize: '13px'
@@ -271,7 +272,7 @@ export default function CSFTest() {
       imgData: img
     }));
     // console.log("image obj: - ",img)
-    console.log('test result', state.testResult[0]);
+    console.log('test result', state.testResult);
     // document.getElementById('changeImage').click();
   };
   const replaceImage = e => {
@@ -325,6 +326,7 @@ export default function CSFTest() {
         [...res.data.data.test_result, ...res.data.data.output_res]
       ]
     }));
+    // console.log("state test result: ", state.testResult)
   };
   const data = useMemo(() => state.testResult, [state.testResult]);
   const handleError = (err, requestId) => {
@@ -578,22 +580,23 @@ export default function CSFTest() {
                 </Typography>
               )}
               {state.resultFetched
-                ? // state.resultImages.map((source, index) => (
-                  //     <Image
-                  //       className="outputImage"
-                  //       key={index}
-                  //       src={source}
-                  //       width={350}
-                  //       height={500}
-                  //       layout="responsive"
-                  //       objectFit="contain"
-                  //       alt={`output-${index}`}
-                  //       loading="eager"
-                  //       priority
-                  //       onClick={() => upLoad(source)}
-                  //     />
-                  //   ))
-                  console.log('output received')
+                ? 
+                state.resultImages.map((source, index) => (
+                      <Image
+                        className="outputImage"
+                        key={index}
+                        src={source}
+                        width={350}
+                        height={500}
+                        layout="responsive"
+                        objectFit="contain"
+                        alt={`output-${index}`}
+                        loading="eager"
+                        priority
+                        onClick={() => upLoad(state.resultImages[index])}
+                      />
+                    ))
+                  // console.log('output received')
                 : state.imageSource.map((source, index) => (
                     <Image
                       src={source}
