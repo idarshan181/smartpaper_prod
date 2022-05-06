@@ -283,6 +283,7 @@ export default function CSFTest() {
       imageLabel: '',
       imageAdded: false,
       imageSource: [],
+      resultImages: [],
       isDisabled: true,
       isClearDisabled: true,
       resultFetched: false,
