@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import { createRef, useState } from 'react';
+import { createRef, useMemo, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
 import useForm from '@/libs/useForm';
@@ -28,7 +28,9 @@ import {
 } from '@/styles/CustomForm';
 import CustomPaper from '@/styles/CustomPaper';
 import ImageViewer from '@/styles/ImageViewer';
+import TableStyles from '@/styles/TableStyles';
 
+import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
@@ -50,7 +52,115 @@ const resizeFile = file =>
       1280
     );
   });
+
 export default function CSFTest() {
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Correct',
+        accessor: 'count_correct',
+        collapse: true,
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          color: 'deep-green'
+        }
+      },
+      {
+        Header: 'Incorrect',
+        accessor: 'count_incorrect',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          color: 'red'
+        }
+      },
+      {
+        Header: '% correct',
+        accessor: 'pct_correct_checked',
+        Cell: props => props.value + '%',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          width: '200px',
+          maxWidth: 400,
+          minWidth: 140
+        }
+      },
+      {
+        Header: 'Blank',
+        accessor: 'count_blank',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          maxWidth: 400,
+          minWidth: 140,
+          textAlign: 'center'
+        }
+      },
+      {
+        Header: '% total correct',
+        accessor: 'pct_correct_total',
+        Cell: props => props.value + '%',
+        style: {
+          // fontWeight: 'bolder',
+          fontSize: '13px',
+          width: '100px',
+          maxWidth: 400,
+          minWidth: 140
+        }
+      }
+      // {
+      //   Header: '% total correct',
+      //   accessor: 'pct_correct_total1',
+      //   Cell: props => props.value + '%',
+      //   style: {
+      //     // fontWeight: 'bolder',
+      //     fontSize: '13px',
+      //     width: '100px',
+      //     maxWidth: 400,
+      //     minWidth:140,
+      //   }
+      // },
+      // {
+      //   Header: '% total correct',
+      //   accessor: 'pct_correct_total2',
+      //   Cell: props => props.value + '%',
+      //   style: {
+      //     // fontWeight: 'bolder',
+      //     fontSize: '13px',
+      //     width: '100px',
+      //     maxWidth: 400,
+      //     minWidth:140,
+      //   }
+      // }
+    ],
+    []
+  );
+  const data = useMemo(
+    () => [
+      {
+        count_blank: 1,
+        count_correct: 3,
+        count_incorrect: 9,
+        pct_correct_checked: 25,
+        pct_correct_total: 23.1,
+        pct_correct_total1: 23.1,
+        pct_correct_total2: 23.1
+      },
+      {
+        count_blank: 2,
+        count_correct: 5,
+        count_incorrect: 3,
+        pct_correct_checked: 40,
+        pct_correct_total: 40.1,
+        pct_correct_total1: 40.1,
+        pct_correct_total2: 40.1
+      }
+    ],
+    []
+  );
+
   const [state, setState] = useState({
     orgName: 'CSF',
     imageLabel: '',
@@ -68,7 +178,9 @@ export default function CSFTest() {
     isDisabled: true,
     isClearDisabled: true,
     inputImage: createRef(),
-    resultImages: []
+    resultImages: [],
+    testResult: [],
+    imgData: null
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -103,16 +215,21 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
-        console.log(`original-${id}`, file);
+        // console.log(`original-${id}`, file);
+        const imgObj = {};
         await resizeFile(file)
           .then(res => {
-            console.log(`using image resizer-${id}`, res);
+            // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
+            imgObj['id'] = Math.floor(Math.random() * 10000);
+            imgObj['blob'] = blob;
+            imgObj['res'] = res;
             setState(prevState => ({
               ...prevState,
-              imageSource: [...prevState.imageSource, blob],
-              testImages: [...prevState.testImages, res]
+              imageSource: [...prevState.imageSource, imgObj.blob], //.blob
+              testImages: [...prevState.testImages, imgObj.res] //.res
             }));
+            console.log('image object 2- :', imgObj);
           })
           .catch(err => console.log(err));
       });
@@ -128,6 +245,17 @@ export default function CSFTest() {
         isClearDisabled: false
       }));
     }
+  };
+  const upLoad = img => {
+    setState(prevState => ({
+      ...prevState,
+      imgData: img
+    }));
+    console.log('image obj: - ', img);
+    // document.getElementById('changeImage').click();
+  };
+  const replaceImage = e => {
+    console.log(e);
   };
   const resetData = e => {
     e.preventDefault();
@@ -150,7 +278,8 @@ export default function CSFTest() {
       },
       resultImages: [],
       loading: false,
-      loadingMessage: ''
+      loadingMessage: '',
+      testResult: []
     }));
   };
 
@@ -160,7 +289,6 @@ export default function CSFTest() {
       res,
       new Date().toLocaleTimeString('en-US')
     );
-
     setState(prevState => ({
       ...prevState,
       loading: false,
@@ -170,10 +298,11 @@ export default function CSFTest() {
       isDisabled: true,
       isClearDisabled: false,
       testImages: [],
-      resultFetched: true
+      resultFetched: true,
+      testResult: [...prevState.testResult, res.data.data.test_result[0]]
     }));
   };
-
+  const data1 = useMemo(() => state.testResult, [state.testResult]);
   const handleError = (err, requestId) => {
     console.log(
       `Error from queue class - ${requestId}`,
@@ -437,6 +566,7 @@ export default function CSFTest() {
                       alt={`output-${index}`}
                       loading="eager"
                       priority
+                      onClick={() => upLoad(source)}
                     />
                   ))
                 : state.imageSource.map((source, index) => (
@@ -451,10 +581,17 @@ export default function CSFTest() {
                       layout="responsive"
                       objectFit="contain"
                       className="outputImage"
+                      onClick={() => upLoad(source)}
                     />
                   ))}
             </ImageViewer>
           )}
+          <input
+            id="changeImage"
+            hidden
+            type="file"
+            onChange={e => replaceImage(e)}
+          />
           <label htmlFor="testImages" style={{ alignSelf: 'center' }}>
             <Input
               accept="image/*"
@@ -503,6 +640,22 @@ export default function CSFTest() {
           >
             Submit
           </CustomButton>
+          {state.resultFetched && (
+            <TableStyles>
+              <Table
+                columns={columns}
+                data={data1}
+                getHeaderProps={column => ({
+                  style: {
+                    color: 'white'
+                  }
+                })}
+                // style = {{
+                //   // width: '50px',
+                // }}
+              />
+            </TableStyles>
+          )}
         </CustomPaper>
       </Box>
     </Container>
