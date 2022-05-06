@@ -601,6 +601,7 @@ export default function CSFTest() {
               id="testImages"
               name="testImages"
               type="file"
+              multiple
               ref={state.inputImage}
               aria-label="Select photo(s)"
               onChange={handleFileChange}
