@@ -110,7 +110,6 @@ export default function CSFTest() {
           fontSize: '13px',
           maxWidth: 400,
           minWidth: 80,
-          textAlign: 'center'
         }
       },
       {
