@@ -71,7 +71,6 @@ export default function CSFTest() {
       {
         Header: 'Correct',
         accessor: row => row[0].count_correct,
-        // console.log("row",row[0].count_correct)
         collapse: true,
         style: {
           fontSize: '13px',
@@ -83,7 +82,6 @@ export default function CSFTest() {
         accessor: row => row[0].count_incorrect,
         collapse: true,
         style: {
-          // fontWeight: 'bolder',
           fontSize: '13px',
           color: 'red'
         }
@@ -106,7 +104,6 @@ export default function CSFTest() {
         accessor: row => row[0].count_blank,
         collapse: true,
         style: {
-          // fontWeight: 'bolder',
           fontSize: '13px',
           maxWidth: 400,
           minWidth: 80
@@ -134,47 +131,11 @@ export default function CSFTest() {
           </a>
         ),
         style: {
-          // fontWeight: 'bolder',
           fontSize: '13px',
           width: '100px',
           maxWidth: 1000,
           minWidth: 720
         }
-      }
-      // {
-      //   Header: '% total correct',
-      //   accessor: 'pct_correct_total2',
-      //   Cell: props => props.value + '%',
-      //   style: {
-      //     // fontWeight: 'bolder',
-      //     fontSize: '13px',
-      //     width: '100px',
-      //     maxWidth: 400,
-      //     minWidth:140,
-      //   }
-      // }
-    ],
-    []
-  );
-  const tempData = useMemo(
-    () => [
-      {
-        count_blank: 1,
-        count_correct: 3,
-        count_incorrect: 9,
-        pct_correct_checked: 25,
-        pct_correct_total: 23.1,
-        pct_correct_total1: 23.1,
-        pct_correct_total2: 23.1
-      },
-      {
-        count_blank: 2,
-        count_correct: 5,
-        count_incorrect: 3,
-        pct_correct_checked: 40,
-        pct_correct_total: 40.1,
-        pct_correct_total1: 40.1,
-        pct_correct_total2: 40.1
       }
     ],
     []
@@ -273,7 +234,6 @@ export default function CSFTest() {
   };
   const resetData = e => {
     e.preventDefault();
-    // document.getElementById("image-input").value = "";
     resetForm();
     state.inputImage.current.value = '';
 
