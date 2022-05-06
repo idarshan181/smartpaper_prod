@@ -16,7 +16,6 @@ import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
 import Resizer from 'react-image-file-resizer';
 
-import { getScanResult } from '@/libs/api';
 import useForm from '@/libs/useForm';
 
 import { CSFTestNames } from '@/data/csf';
@@ -34,6 +33,7 @@ import TableStyles from '@/styles/TableStyles';
 import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
 import Loader from './Loader';
+import { ImageQueue } from './QueueClass';
 
 const resizeFile = file =>
   new Promise(resolve => {
@@ -198,8 +198,7 @@ export default function CSFTest() {
     isClearDisabled: true,
     inputImage: createRef(),
     resultImages: [],
-    testResult: [],
-    imgData: null
+    testResult: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -235,20 +234,15 @@ export default function CSFTest() {
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
         // console.log(`original-${id}`, file);
-        const imgObj = {};
         await resizeFile(file)
           .then(res => {
             // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
-            imgObj['id'] = Math.floor(Math.random() * 10000);
-            imgObj['blob'] = blob;
-            imgObj['res'] = res;
             setState(prevState => ({
               ...prevState,
-              imageSource: [...prevState.imageSource, imgObj.blob], //.blob
-              testImages: [...prevState.testImages, imgObj.res] //.res
+              imageSource: [...prevState.imageSource, blob], //.blob
+              testImages: [...prevState.testImages, res] //.res
             }));
-            console.log('image object 2- :', imgObj);
           })
           .catch(err => console.log(err));
       });
@@ -346,7 +340,28 @@ export default function CSFTest() {
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
-    await getScanResult(
+    const imageQ = new ImageQueue(
+      testName,
+      testImages,
+      orgName,
+      school,
+      grade,
+      rollNo,
+      subject,
+      updateState,
+      handleError
+    );
+    imageQ.start();
+    setTimeout(() => {
+      setState(prevState => ({
+        ...prevState,
+        isDisabled: true,
+        isClearDisabled: true,
+        loading: false,
+        loadingMessage: ''
+      }));
+    }, 6000);
+    /* await getScanResult(
       testName,
       testImages,
       orgName,
@@ -428,7 +443,7 @@ export default function CSFTest() {
             }
           }));
         }, 60000);
-      });
+      }); */
   };
 
   return (
@@ -653,9 +668,6 @@ export default function CSFTest() {
                     color: 'white'
                   }
                 })}
-                // style = {{
-                //   // width: '50px',
-                // }}
               />
             </TableStyles>
           )}
