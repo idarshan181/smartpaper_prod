@@ -235,20 +235,15 @@ export default function CSFTest() {
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
         // console.log(`original-${id}`, file);
-        const imgObj = {};
         await resizeFile(file)
           .then(res => {
             // console.log(`using image resizer-${id}`, res);
             const blob = URL.createObjectURL(res);
-            imgObj['id'] = Math.floor(Math.random() * 10000);
-            imgObj['blob'] = blob;
-            imgObj['res'] = res;
             setState(prevState => ({
               ...prevState,
-              imageSource: [...prevState.imageSource, imgObj.blob], //.blob
-              testImages: [...prevState.testImages, imgObj.res] //.res
+              imageSource: [...prevState.imageSource, blob], //.blob
+              testImages: [...prevState.testImages, res] //.res
             }));
-            console.log('image object 2- :', imgObj);
           })
           .catch(err => console.log(err));
       });
@@ -653,9 +648,6 @@ export default function CSFTest() {
                     color: 'white'
                   }
                 })}
-                // style = {{
-                //   // width: '50px',
-                // }}
               />
             </TableStyles>
           )}
