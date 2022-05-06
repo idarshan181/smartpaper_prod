@@ -14,8 +14,8 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
-import Resizer from 'react-image-file-resizer';
 
+// import Resizer from 'react-image-file-resizer';
 import useForm from '@/libs/useForm';
 
 import { CSFTestNames } from '@/data/csf';
@@ -32,26 +32,9 @@ import TableStyles from '@/styles/TableStyles';
 
 import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
+import { resizeFile } from './ImageResize';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
-
-const resizeFile = file =>
-  new Promise(resolve => {
-    Resizer.imageFileResizer(
-      file, //file name
-      720, //max width
-      1280, //ht
-      'jpeg', //format
-      50, //quality
-      0, //rotation
-      uri => {
-        resolve(uri);
-      },
-      'file',
-      720,
-      1280
-    );
-  });
 
 export default function CSFTest() {
   const columns = useMemo(
@@ -62,7 +45,7 @@ export default function CSFTest() {
         maxWidth: 50,
         filterable: false,
         Cell: row => {
-          return <div>{row.row.index + 1}</div>;
+          return <div>{row.row.index + 1+"."}</div>;
         },
         style: {
           fontSize: '13px'
