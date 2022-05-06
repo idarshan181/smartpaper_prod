@@ -283,6 +283,7 @@ export default function CSFTest() {
       imageLabel: '',
       imageAdded: false,
       imageSource: [],
+      resultImages: [],
       isDisabled: true,
       isClearDisabled: true,
       resultFetched: false,
@@ -570,38 +571,41 @@ export default function CSFTest() {
                   {state.imageLabel}
                 </Typography>
               )}
-              {state.resultFetched
-                ? state.resultImages.map((source, index) => (
-                    <Image
-                      className="outputImage"
-                      key={index}
-                      src={source}
-                      width={350}
-                      height={500}
-                      layout="responsive"
-                      objectFit="contain"
-                      alt={`output-${index}`}
-                      loading="eager"
-                      priority
-                      onClick={() => upLoad(state.resultImages[index])}
-                    />
-                  ))
-                : // console.log('output received')
-                  state.imageSource.map((source, index) => (
-                    <Image
-                      src={source}
-                      alt={`Your Work - ${index}`}
-                      id="output"
-                      key={index}
-                      loading="lazy"
-                      width={2}
-                      height={3}
-                      layout="responsive"
-                      objectFit="contain"
-                      className="outputImage"
-                      onClick={() => upLoad(source)}
-                    />
-                  ))}
+              {state.resultFetched ? (
+                // ? state.resultImages.map((source, index) => (
+                //     <Image
+                //       className="outputImage"
+                //       key={index}
+                //       src={source}
+                //       width={350}
+                //       height={500}
+                //       layout="responsive"
+                //       objectFit="contain"
+                //       alt={`output-${index}`}
+                //       loading="eager"
+                //       priority
+                //       onClick={() => upLoad(state.resultImages[index])}
+                //     />
+                //   ))
+                <></>
+              ) : (
+                // console.log('output received')
+                state.imageSource.map((source, index) => (
+                  <Image
+                    src={source}
+                    alt={`Your Work - ${index}`}
+                    id="output"
+                    key={index}
+                    loading="lazy"
+                    width={2}
+                    height={3}
+                    layout="responsive"
+                    objectFit="contain"
+                    className="outputImage"
+                    onClick={() => upLoad(source)}
+                  />
+                ))
+              )}
             </ImageViewer>
           )}
           <input
