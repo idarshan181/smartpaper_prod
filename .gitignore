@@ -32,3 +32,13 @@ yarn-error.log*
 
 package-lock.json
 package-lock*.json
+
+# local files
+/src/components/LoadingProg.js
+/src/components/TempTable.js
+/src/components/TempTableComp.js
+
+/src/pages/loadbar.js
+/src/pages/table.js
+
+/src/styles/TestTable.js
