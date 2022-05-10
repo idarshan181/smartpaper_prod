@@ -29,7 +29,7 @@ const Loader = ({ loadingMessage, ...props }) => {
     <Box
       sx={{
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        position: 'absolute',
+        position: 'sticky',
         top: 0,
         bottom: 0,
         left: 0,

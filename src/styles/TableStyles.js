@@ -49,6 +49,7 @@ const TableStyles = styled.div`
       padding: 0.5rem;
       border-bottom: 1px solid black;
       border-right: 1px solid black;
+      text-align: center;
 
       /* Each cell should grow equally */
       width: 1%;
