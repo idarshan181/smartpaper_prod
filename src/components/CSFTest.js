@@ -2,8 +2,10 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable no-unused-vars */
+import { ErrorOutline } from '@mui/icons-material';
 import {
   Box,
+  Button,
   Container,
   Grid,
   LinearProgress,
@@ -30,7 +32,7 @@ import CustomPaper from '@/styles/CustomPaper';
 import ImageViewer from '@/styles/ImageViewer';
 import TableStyles from '@/styles/TableStyles';
 
-import { CustomModal } from './CustomDialog';
+import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
 import { resizeFile } from './ImageResize';
@@ -46,7 +48,7 @@ export default function CSFTest() {
         maxWidth: 50,
         filterable: false,
         Cell: row => {
-          return <div>{row.row.index + 1+"."}</div>;
+          return <div>{row.row.index + 1 + '.'}</div>;
         },
         style: {
           fontSize: '13px'
@@ -144,6 +146,7 @@ export default function CSFTest() {
     testResult: [],
     progressStatus: 0,
     totalImages: 0,
+    open: false
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -157,7 +160,6 @@ export default function CSFTest() {
     setState(prevState => ({
       ...prevState,
       imageAdded: false,
-      resultFetched: false,
       imageLabel: '',
       isDisabled: true,
       isClearDisabled: true,
@@ -167,14 +169,15 @@ export default function CSFTest() {
     if (files.length === 0) {
       setState(prevState => ({
         ...prevState,
-        testImages: [],
+        // testImages: [],
         imageLabel: '',
-        imageAdded: false,
-        imageSource: [],
-        isDisabled: true,
-        isClearDisabled: true
+        imageAdded: true,
+        // imageSource: [],
+        isDisabled: false,
+        isClearDisabled: false
       }));
-    } else {
+    } 
+    else {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
@@ -186,7 +189,8 @@ export default function CSFTest() {
             setState(prevState => ({
               ...prevState,
               imageSource: [...prevState.imageSource, blob], //.blob
-              testImages: [...prevState.testImages, res] //.res
+              testImages: [...prevState.testImages, res], //.res
+              totalImages: prevState.totalImages
             }));
           })
           .catch(err => console.log(err));
@@ -213,9 +217,9 @@ export default function CSFTest() {
     // console.log('test result', state.testResult);
     // document.getElementById('changeImage').click();
   };
-  const replaceImage = e => {
-    console.log(e);
-  };
+  // const replaceImage = e => {
+  //   console.log(e);
+  // };
   const resetData = e => {
     e.preventDefault();
     resetForm();
@@ -239,6 +243,7 @@ export default function CSFTest() {
       loadingMessage: '',
       testResult: [],
       progressStatus: 0,
+      open: false
     }));
   };
 
@@ -247,7 +252,8 @@ export default function CSFTest() {
       `Res from queue class - ${requestId}`,
       res,
       new Date().toLocaleTimeString('en-US'),
-      "length of testimages", state.testImages.length
+      'length of testimages',
+      state.testImages.length
     );
     // console.log("test result: ", res.data.data.test_result[0], "output result image: ",res.data.data.output_res);
     setState(prevState => ({
@@ -259,13 +265,14 @@ export default function CSFTest() {
       isDisabled: true,
       isClearDisabled: false,
       testImages: [],
+      imageSource: [],
       resultFetched: true,
       testResult: [
         ...prevState.testResult,
         [...res.data.data.test_result, ...res.data.data.output_res]
       ],
       progressStatus: requestId,
-      totalImages: state.testImages.length,
+      totalImages: state.testImages.length
     }));
     // console.log("state test result: ", state.testResult)
   };
@@ -395,6 +402,18 @@ export default function CSFTest() {
       }); */
   };
 
+  const handleClickOpen = () => {
+    setState(prevState => ({
+      ...prevState,
+      open: true
+    }));
+  };
+  const handleClose = () => {
+    setState(prevState => ({
+      ...prevState,
+      open:false
+    }));
+  };
   return (
     <Container
       sx={{
@@ -466,58 +485,33 @@ export default function CSFTest() {
                 </Select>
               </Grid>
             </Grid>
-            {/* <CustomButton
-              fullWidth
-              variant="contained"
-              type="submit"
-              disabled={!(state.testImages.length > 0 && inputs.testName)}
-              sx={{
-                width: '150px',
-                height: '36px',
-                fontSize: '16px',
-                lineHeight: '20px',
-                textTransform: 'none',
-                alignSelf: 'center',
-                marginTop: '8px',
-                borderRadius: '8px'
-              }}
-            >
-              Submit
-            </CustomButton>
-            <Button
-              type="reset"
-              // disabled={state.isClearDisabled}
-              variant="outlined"
-              color="error"
-              fullWidth
-              sx={{
-                width: '150px',
-                height: '36px',
-                fontSize: '16px',
-                // lineHeight: '20px',
-                textTransform: 'none',
-                alignSelf: 'center',
-                borderRadius: '8px',
-                marginTop: '8px',
-                color: 'theme.palette.error.main'
-              }}
-              onClick={resetData}
-            >
-              Clear Data
-            </Button> */}
-
             {
               <Typography variant="body1" gutterBottom sx={{ mt: 1, mb: 2 }}>
                 Total pages : {state.imageSource.length}
               </Typography>
             }
           </Box>
+
           {state.imageAdded && (
             <ImageViewer>
-              {state.imageLabel && (
-                <Typography htmlFor="output" className="outputLabel">
-                  {state.imageLabel}
-                </Typography>
+              {state.testResult.length > 0 && (
+                <TableStyles>
+                  {/* {state.imageLabel && (
+                    <Typography htmlFor="output" className="outputLabel">
+                      {state.imageLabel}
+                    </Typography>
+                  )} */}
+                  <h3> Results</h3>
+                  <Table
+                    columns={columns}
+                    data={data}
+                    getHeaderProps={column => ({
+                      style: {
+                        color: 'white'
+                      }
+                    })}
+                  />
+                </TableStyles>
               )}
               {state.resultFetched ? (
                 // ? state.resultImages.map((source, index) => (
@@ -536,15 +530,18 @@ export default function CSFTest() {
                 //     />
                 //   ))
                 <div>
-                  <Box sx={{
-                    mb:2,
-                  }}>
-                    <Typography variant='h6' component="div" textAlign="center">
+                  <Box
+                    sx={{
+                      mb: 2
+                    }}
+                  >
+                    <Typography variant="h6" component="div" textAlign="center">
                       {state.progressStatus}/{state.totalImages}
                     </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={(state.progressStatus / state.totalImages.length) * 100}
+                    <LinearProgress
+                      variant="determinate"
+                      value={(state.progressStatus / state.totalImages) * 100}
+                      sx={{ height: 7 }}
                     ></LinearProgress>
                   </Box>
                 </div>
@@ -569,21 +566,27 @@ export default function CSFTest() {
             </ImageViewer>
           )}
 
-          {/* <label htmlFor="testImages" style={{ alignSelf: 'center' }}>
-            <Input
-              accept="image/*"
-              id="testImages"
-              name="testImages"
-              type="file"
-              multiple
-              ref={state.inputImage}
-              aria-label="Select photo(s)"
-              onChange={handleFileChange}
+          {/* table styles was here */}
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              position: 'sticky',
+              bottom: 0,
+              backgroundColor: '#ffffff7f',
+              width: '100%'
+            }}
+          >
+            <ResetDialog
+              open={state.open}
+              onClose={handleClose}
+              onReset={resetData}
             />
-            <CustomButton
-              fullWidth
-              variant="contained"
-              component="span"
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<ErrorOutline />}
               sx={{
                 width: '150px',
                 height: '36px',
@@ -591,77 +594,14 @@ export default function CSFTest() {
                 lineHeight: '20px',
                 textTransform: 'none',
                 alignSelf: 'center',
-                marginTop: '8px',
-                mb: 2,
-                borderRadius: '8px'
-              }}
-            >
-              + Add Page
-            </CustomButton>
-          </label> */}
-          {/* <CustomButton
-            fullWidth
-            variant="contained"
-            disabled={!(state.testImages.length > 0 && inputs.testName)}
-            sx={{
-              width: '150px',
-              height: '36px',
-              fontSize: '16px',
-              lineHeight: '20px',
-              textTransform: 'none',
-              alignSelf: 'center',
-              marginBottom: '8px',
-              borderRadius: '8px'
-            }}
-            onClick={handleSubmit}
-          >
-            Submit
-          </CustomButton> */}
-          {state.resultFetched && (
-            <TableStyles>
-              <Table
-                columns={columns}
-                data={data}
-                getHeaderProps={column => ({
-                  style: {
-                    color: 'white'
-                  }
-                })}
-              />
-            </TableStyles>
-          )}
-          <div
-            component="form"
-            onSubmit={handleSubmit}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              position: 'sticky',
-              bottom: 0
-            }}
-          >
-            {/* <Button
-              variant="contained"
-              type="reset"
-              // disabled={state.isClearDisabled}
-              color="error"
-              sx={{
-                width: '156px',
-                height: '36px',
-                fontSize: '16px',
-                lineHeight: '20px',
-                textTransform: 'none',
-                alignSelf: 'center',
-                mr: 1,
+                // marginTop: '8px',
                 borderRadius: '8px',
-                color: 'theme.palette.error.main'
+                mr: 1
               }}
-              onClick={resetData}
+              onClick={handleClickOpen}
             >
-              Clear Data
-            </Button> */}
-          <CustomModal onReset={resetData}/>
+              Clear
+            </Button>
             <label htmlFor="testImages">
               <Input
                 accept="image/*"
@@ -683,9 +623,10 @@ export default function CSFTest() {
                   lineHeight: '20px',
                   textTransform: 'none',
                   alignSelf: 'center',
+                  // marginTop: '8px',
+                  borderRadius: '8px',
                   mr: 1,
-                  mb: 0.56,
-                  borderRadius: '8px'
+                  mb: 0.41
                 }}
               >
                 + Add
@@ -709,7 +650,7 @@ export default function CSFTest() {
             >
               Submit
             </CustomButton>
-          </div>
+          </Box>
         </CustomPaper>
       </Box>
     </Container>
