@@ -17,3 +17,9 @@ export const resizeFile = file =>
       1280
     );
   });
+
+  export const base64ToImage = (base64String) => {
+    var image = new Image();
+    image.src = base64String;
+    return image
+  }
