@@ -34,8 +34,7 @@ import TableStyles from '@/styles/TableStyles';
 
 import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
-import ErrorMessage from './ErrorMessage';
-import { base64ToImage, resizeFile } from './ImageHandling';
+import { resizeFile } from './ImageHandling';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
 
@@ -147,7 +146,6 @@ export default function CSFTest() {
     progressStatus: 0,
     totalImages: 0,
     open: false,
-    errorImage: {}
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -165,11 +163,6 @@ export default function CSFTest() {
       isDisabled: true,
       isClearDisabled: true,
       pageMetadata: [],
-      isError: false,
-      errorImage: '',
-      error: {
-        message: ''
-      }
     }));
     const { files } = e.target;
     if (files.length === 0) {
@@ -250,7 +243,7 @@ export default function CSFTest() {
       testResult: [],
       progressStatus: 0,
       open: false,
-      errorImage: '',
+      // errorImage: '',
     }));
   };
 
@@ -290,17 +283,17 @@ export default function CSFTest() {
       {err}, "error reso",err.response,
       new Date().toLocaleTimeString('en-US')
     );
-    const errImg = base64ToImage(err.response.data.detail.base64Image);
-    setState(prevState => ({
-      ...prevState,
-      resultFetched: true,
-      error: {
-        message: err.response.data.detail.detail
-      },
-      isError: true,
-      errorImage: errImg,
-      testImages: [],
-    }))
+    // const errImg = base64ToImage(err.response.data.detail.base64Image);
+    // setState(prevState => ({
+    //   ...prevState,
+    //   resultFetched: true,
+    //   error: {
+    //     message: err.response.data.detail.detail
+    //   },
+    //   isError: true,
+    //   errorImage: errImg,
+    //   testImages: [],
+    // }))
   };
   const handleSubmit = async e => {
     e.preventDefault();
@@ -586,7 +579,7 @@ export default function CSFTest() {
               )}
             </ImageViewer>
           )}
-          {state.isError && (
+          {/* {state.isError && (
             <ImageViewer >
               <Typography variant="h5" textAlign="center">Error Image</Typography>
               {state.isError ? <ErrorMessage error={state.error} /> : null}
@@ -600,7 +593,7 @@ export default function CSFTest() {
                 objectFit="contain"
               ></Image>
             </ImageViewer>
-          )}
+          )} */}
 
           {/* table styles was here */}
           <Box
