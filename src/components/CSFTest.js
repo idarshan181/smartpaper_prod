@@ -35,7 +35,7 @@ import TableStyles from '@/styles/TableStyles';
 import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
 import ErrorMessage from './ErrorMessage';
-import { resizeFile } from './ImageResize';
+import { base64ToImage, resizeFile } from './ImageHandling';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
 
@@ -146,7 +146,8 @@ export default function CSFTest() {
     testResult: [],
     progressStatus: 0,
     totalImages: 0,
-    open: false
+    open: false,
+    errorImage: {}
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -163,7 +164,12 @@ export default function CSFTest() {
       imageLabel: '',
       isDisabled: true,
       isClearDisabled: true,
-      pageMetadata: []
+      pageMetadata: [],
+      isError: false,
+      errorImage: '',
+      error: {
+        message: ''
+      }
     }));
     const { files } = e.target;
     if (files.length === 0) {
@@ -189,7 +195,7 @@ export default function CSFTest() {
             setState(prevState => ({
               ...prevState,
               imageSource: [...prevState.imageSource, blob], //.blob
-              testImages: [...prevState.testImages, res], //.res
+              testImages: [...prevState.testImages, res], //.res {img: file, id:int}
               totalImages: prevState.totalImages
             }));
           })
@@ -209,10 +215,10 @@ export default function CSFTest() {
     }
   };
   const upLoad = img => {
-    setState(prevState => ({
-      ...prevState,
-      imgData: img
-    }));
+    // setState(prevState => ({
+    //   ...prevState,
+    //   imgData: img
+    // }));
     // console.log("image obj: - ",img)
     // console.log('test result', state.testResult);
     // document.getElementById('changeImage').click();
@@ -243,7 +249,8 @@ export default function CSFTest() {
       loadingMessage: '',
       testResult: [],
       progressStatus: 0,
-      open: false
+      open: false,
+      errorImage: '',
     }));
   };
 
@@ -280,9 +287,20 @@ export default function CSFTest() {
   const handleError = (err, requestId) => {
     console.log(
       `Error from queue class - ${requestId}`,
-      err,
+      {err}, "error reso",err.response,
       new Date().toLocaleTimeString('en-US')
     );
+    const errImg = base64ToImage(err.response.data.detail.base64Image);
+    setState(prevState => ({
+      ...prevState,
+      resultFetched: true,
+      error: {
+        message: err.response.data.detail.detail
+      },
+      isError: true,
+      errorImage: errImg,
+      testImages: [],
+    }))
   };
   const handleSubmit = async e => {
     e.preventDefault();
@@ -407,6 +425,7 @@ export default function CSFTest() {
       ...prevState,
       open: true
     }));
+    console.log(state.error)
   };
   const handleClose = () => {
     setState(prevState => ({
@@ -440,7 +459,7 @@ export default function CSFTest() {
         }}
       >
         <CustomPaper elevation={3}>
-          {state.isError ? <ErrorMessage error={state.error} /> : null}
+          
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -514,22 +533,22 @@ export default function CSFTest() {
                 </TableStyles>
               )}
               {state.resultFetched ? (
-                // ? state.resultImages.map((source, index) => (
-                //     <Image
-                //       className="outputImage"
-                //       key={index}
-                //       src={source}
-                //       width={350}
-                //       height={500}
-                //       layout="responsive"
-                //       objectFit="contain"
-                //       alt={`output-${index}`}
-                //       loading="eager"
-                //       priority
-                //       onClick={() => upLoad(state.resultImages[index])}
-                //     />
-                //   ))
                 <div>
+                  {/* {state.resultImages.map((source, index) => (
+                    <Image
+                      className="outputImage"
+                      key={index}
+                      src={source}
+                      width={350}
+                      height={500}
+                      layout="responsive"
+                      objectFit="contain"
+                      alt={`output-${index}`}
+                      loading="eager"
+                      priority
+                      onClick={() => upLoad(state.resultImages[index])}
+                    />
+                  ))} */}
                   <Box
                     sx={{
                       mb: 2
@@ -559,10 +578,27 @@ export default function CSFTest() {
                     layout="responsive"
                     objectFit="contain"
                     className="outputImage"
-                    onClick={() => upLoad(source)}
+                    onClick={() => {
+                      console.log('');
+                    }}
                   />
                 ))
               )}
+            </ImageViewer>
+          )}
+          {state.isError && (
+            <ImageViewer >
+              <Typography variant="h5" textAlign="center">Error Image</Typography>
+              {state.isError ? <ErrorMessage error={state.error} /> : null}
+              <Image
+                src={state.errorImage}
+                alt={`error image `}
+                className="outputImage"
+                width={2}
+                height={3}
+                layout="responsive"
+                objectFit="contain"
+              ></Image>
             </ImageViewer>
           )}
 
