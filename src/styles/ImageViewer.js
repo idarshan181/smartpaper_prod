@@ -26,6 +26,7 @@ const ImageViewer = styled.div`
     margin-top: 2px;
     border-radius: 8px;
     box-sizing: border-box;
+    /* border: 10px solid red; */
     filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
   }
   @media (max-width: 400px) {
