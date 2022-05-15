@@ -36,7 +36,7 @@ import TableStyles from '@/styles/TableStyles';
 
 import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
-import ErrorImageComponent from './errorImageComponent';
+import ErrorImageComponent from './ErrorImageComponent';
 import ErrorMessage from './ErrorMessage';
 import { resizeFile } from './ImageHandling';
 import Loader from './Loader';
