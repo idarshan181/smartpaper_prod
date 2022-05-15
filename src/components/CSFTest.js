@@ -237,7 +237,7 @@ export default function CSFTest() {
       // errorImage: '',
     }));
   };
-  const updateState = (res, requestNo, requestArray) => {
+  const updateState = (res, requestNo) => {
     console.log(
       `Res from queue class - ${requestNo}`,
       res,
@@ -264,7 +264,7 @@ export default function CSFTest() {
     }));
   };
 
-  const handleError = (err, requestNo, requestArray) => {
+  const handleError = (err, requestNo) => {
     // console.log(
     //   `Error from queue class - ${requestNo}`,
     //   err.response.data,
