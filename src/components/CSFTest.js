@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-const-assign */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable unused-imports/no-unused-vars */
@@ -16,6 +17,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
+import { v4 } from 'uuid';
 
 // import Resizer from 'react-image-file-resizer';
 import useForm from '@/libs/useForm';
@@ -34,6 +36,8 @@ import TableStyles from '@/styles/TableStyles';
 
 import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
+import ErrorImageComponent from './errorImageComponent';
+import ErrorMessage from './ErrorMessage';
 import { resizeFile } from './ImageHandling';
 import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
@@ -135,6 +139,7 @@ export default function CSFTest() {
     error: {
       message: ''
     },
+    errorProps: [],
     resultFetched: false,
     studentResult: [],
     testImages: [],
@@ -146,6 +151,7 @@ export default function CSFTest() {
     progressStatus: 0,
     totalImages: 0,
     open: false,
+    requestArray: []
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
@@ -162,7 +168,7 @@ export default function CSFTest() {
       imageLabel: '',
       isDisabled: true,
       isClearDisabled: true,
-      pageMetadata: [],
+      pageMetadata: []
     }));
     const { files } = e.target;
     if (files.length === 0) {
@@ -175,24 +181,21 @@ export default function CSFTest() {
         isDisabled: false,
         isClearDisabled: false
       }));
-    } 
-    else {
+    } else {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
         // console.log(`original-${id}`, file);
-        await resizeFile(file)
-          .then(res => {
-            // console.log(`using image resizer-${id}`, res);
-            const blob = URL.createObjectURL(res);
-            setState(prevState => ({
-              ...prevState,
-              imageSource: [...prevState.imageSource, blob], //.blob
-              testImages: [...prevState.testImages, res], //.res {img: file, id:int}
-              totalImages: prevState.totalImages
-            }));
-          })
-          .catch(err => console.log(err));
+        await resizeFile(file).then(res => {
+          // console.log(`using image resizer-${id}`, res);
+          const blob = URL.createObjectURL(res);
+          setState(prevState => ({
+            ...prevState,
+            imageSource: [...prevState.imageSource, blob], //.blob
+            testImages: [...prevState.testImages, res], //.res {img: file, id:int}
+            totalImages: prevState.totalImages
+          }));
+        });
       });
       // imageSource: [...prevState.imageSource, ...source], to Append new Image
       // testImages: [...prevState.testImages, files[0]],
@@ -207,18 +210,6 @@ export default function CSFTest() {
       }));
     }
   };
-  const upLoad = img => {
-    // setState(prevState => ({
-    //   ...prevState,
-    //   imgData: img
-    // }));
-    // console.log("image obj: - ",img)
-    // console.log('test result', state.testResult);
-    // document.getElementById('changeImage').click();
-  };
-  // const replaceImage = e => {
-  //   console.log(e);
-  // };
   const resetData = e => {
     e.preventDefault();
     resetForm();
@@ -242,20 +233,17 @@ export default function CSFTest() {
       loadingMessage: '',
       testResult: [],
       progressStatus: 0,
-      open: false,
+      open: false
       // errorImage: '',
     }));
   };
-
-  const updateState = (res, requestId) => {
+  const updateState = (res, requestNo, requestArray) => {
     console.log(
-      `Res from queue class - ${requestId}`,
+      `Res from queue class - ${requestNo}`,
       res,
-      new Date().toLocaleTimeString('en-US'),
-      'length of testimages',
-      state.testImages.length
+      new Date().toLocaleTimeString('en-US')
     );
-    // console.log("test result: ", res.data.data.test_result[0], "output result image: ",res.data.data.output_res);
+    // console.log('request array updateState: uno ', state.requestArray);
     setState(prevState => ({
       ...prevState,
       loading: false,
@@ -271,46 +259,73 @@ export default function CSFTest() {
         ...prevState.testResult,
         [...res.data.data.test_result, ...res.data.data.output_res]
       ],
-      progressStatus: requestId,
+      progressStatus: requestNo,
       totalImages: state.testImages.length
     }));
-    // console.log("state test result: ", state.testResult)
   };
-  const data = useMemo(() => state.testResult, [state.testResult]);
-  const handleError = (err, requestId) => {
-    console.log(
-      `Error from queue class - ${requestId}`,
-      {err}, "error reso",err.response,
-      new Date().toLocaleTimeString('en-US')
-    );
-    // const errImg = base64ToImage(err.response.data.detail.base64Image);
-    // setState(prevState => ({
-    //   ...prevState,
-    //   resultFetched: true,
-    //   error: {
-    //     message: err.response.data.detail.detail
-    //   },
-    //   isError: true,
-    //   errorImage: errImg,
-    //   testImages: [],
-    // }))
-  };
-  const handleSubmit = async e => {
-    e.preventDefault();
 
-    const { testName, school, grade, rollNo, subject } = inputs;
-    const { orgName, testImages } = state;
+  const handleError = (err, requestNo, requestArray) => {
+    // console.log(
+    //   `Error from queue class - ${requestNo}`,
+    //   err.response.data,
+    //   new Date().toLocaleTimeString('en-US')
+    // );
+    const testImageIndex = err.response.data.detail.imageIndex;
+    const errorId = err.response.data.detail.requestId;
+    // console.log('request state : ', state.testResult);
+    let tempErrorProps = {
+      ['errorId']: errorId,
+      ['errorImageIndex']: testImageIndex
+    };
+    // console.log('temp props', tempErrorProps);
     setState(prevState => ({
       ...prevState,
+      loading: false,
+      loadingMessage: '',
+      testImages: [],
+      imageSource: [],
+      isError: true,
+      errorProps: [...prevState.errorProps, tempErrorProps],
+      error: {
+        message: err.response.data.detail.detail
+      },
+      progressStatus: requestNo
+    }));
+  };
+  const data = useMemo(() => state.testResult, [state.testResult]);
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setState(prevState => ({
+      ...prevState,
+      requestArray: ''
+    }));
+    const { testName, school, grade, rollNo, subject } = inputs;
+    const { orgName, testImages, imageSource } = state;
+    // console.log("testImage, imsource", state.imageSource, state.testImages)
+    let tempReqArray = testImages.map((image, id) => {
+      let obj = {};
+      obj['requestId'] = v4();
+      // obj['testImages'] = image;
+      obj['orgName'] = orgName;
+      obj['testName'] = testName;
+      obj['testImages'] = image;
+      obj['imageSource'] = imageSource[id];
+      return obj;
+    });
+    // console.log('state after map :', state.requestArray);
+    setState(prevState => ({
+      ...prevState,
+      requestArray: [...tempReqArray],
+      isError: false,
+      errorProps: [],
       isDisabled: true,
       isClearDisabled: true,
       loading: true,
       loadingMessage: 'Please wait we are getting results for you'
     }));
     const imageQ = new ImageQueue(
-      testName,
-      testImages,
-      orgName,
+      tempReqArray,
       school,
       grade,
       rollNo,
@@ -328,102 +343,44 @@ export default function CSFTest() {
         loadingMessage: ''
       }));
     }, 6000);
-    /* await getScanResult(
-      testName,
-      testImages,
-      orgName,
-      school,
-      grade,
-      rollNo,
-      subject
-    )
-      .then(response => {
-        console.log({ response });
-        const {
-          output_res,
-          input_res,
-          crops_res,
-          res,
-          success,
-          error_message
-        } = response?.data?.data;
-        if (success !== false) {
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            loadingMessage: '',
-            imageLabel: 'Your Result',
-            imageSource: output_res,
-            isDisabled: true,
-            isClearDisabled: false,
-            testImages: [],
-            resultFetched: true
-          }));
-        } else {
-          setState(prevState => ({
-            ...prevState,
-            loading: false,
-            loadingMessage: '',
-            isError: true,
-            error: {
-              message: error_message
-            },
-            resultFetched: false,
-            imageLabel: '',
-            isDisabled: false,
-            isClearDisabled: false
-          }));
-          window.scrollTo(0, 0);
-          setTimeout(() => {
-            setState(prevState => ({
-              ...prevState,
-              isError: false,
-              error: {
-                message: ''
-              }
-            }));
-          }, 60000);
-        }
-      })
-      .catch(err => {
-        setState(prevState => ({
-          ...prevState,
-          formLoading: false,
-          loading: false,
-          loadingMessage: '',
-          isError: true,
-          error: {
-            message: err.response.data.detail
-          },
-          resultFetched: false,
-          imageLabel: '',
-          isDisabled: false,
-          isClearDisabled: false
-        }));
-        window.scrollTo(0, 0);
-        setTimeout(() => {
-          setState(prevState => ({
-            ...prevState,
-            isError: false,
-            error: {
-              message: ''
-            }
-          }));
-        }, 60000);
-      }); */
   };
 
+  // const errorComponent = () => {
+  //   let errImages = [];
+  //   // console.log('error props', state.errorProps);
+  //   state.errorProps.map(element => {
+  //     errImages.push(
+  //       state.requestArray.find(
+  //         errImgElement => errImgElement.requestId === element.errorId
+  //       )
+  //     );
+  //   });
+  //   // console.log('error images', errImages[0].imageSource);
+  //   return errImages.map((errImage, id) => (
+  //     // console.log(errImage.imageSource)
+  //     <Image
+  //       key={id}
+  //       src={errImage.imageSource}
+  //       alt={`error image ${id}`}
+  //       className="outputImage"
+  //       width={2}
+  //       height={3}
+  //       layout="responsive"
+  //       objectFit="contain"
+  //     />
+  //   ));
+  // };
   const handleClickOpen = () => {
     setState(prevState => ({
       ...prevState,
       open: true
     }));
-    console.log(state.error)
+    console.log(state.errorProps);
   };
   const handleClose = () => {
     setState(prevState => ({
       ...prevState,
-      open:false
+      open: false
     }));
   };
   return (
@@ -452,7 +409,6 @@ export default function CSFTest() {
         }}
       >
         <CustomPaper elevation={3}>
-          
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -579,21 +535,29 @@ export default function CSFTest() {
               )}
             </ImageViewer>
           )}
-          {/* {state.isError && (
-            <ImageViewer >
-              <Typography variant="h5" textAlign="center">Error Image</Typography>
+          {state.isError && (
+            <ImageViewer>
+              <Typography variant="h5" textAlign="center">
+                Error Image
+              </Typography>
               {state.isError ? <ErrorMessage error={state.error} /> : null}
-              <Image
+              {/* {errorComponent()} */}
+              <ErrorImageComponent
+                requestArray={state.requestArray}
+                errorProps={state.errorProps}
+              />
+
+              {/* <Image
                 src={state.errorImage}
-                alt={`error image `}
+                alt={`error image`}
                 className="outputImage"
                 width={2}
                 height={3}
                 layout="responsive"
                 objectFit="contain"
-              ></Image>
+              ></Image> */}
             </ImageViewer>
-          )} */}
+          )}
 
           {/* table styles was here */}
           <Box
