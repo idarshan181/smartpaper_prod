@@ -2,7 +2,6 @@ import Image from 'next/image';
 
 const ErrorImageComponent = props => {
   const { requestArray, errorProps } = props;
-  // console.log('req err', requestArray, errorProps);
 
   const newFoo = errorProps.map((element, id) => {
     // errImages.push(
