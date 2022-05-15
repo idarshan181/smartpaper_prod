@@ -17,7 +17,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
-import { v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 // import Resizer from 'react-image-file-resizer';
 import useForm from '@/libs/useForm';
@@ -305,7 +305,7 @@ export default function CSFTest() {
     // console.log("testImage, imsource", state.imageSource, state.testImages)
     let tempReqArray = testImages.map((image, id) => {
       let obj = {};
-      obj['requestId'] = v4();
+      obj['requestId'] = uuidv4();
       // obj['testImages'] = image;
       obj['orgName'] = orgName;
       obj['testName'] = testName;
