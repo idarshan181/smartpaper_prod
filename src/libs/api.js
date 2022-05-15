@@ -15,6 +15,7 @@ const getScanResult = async (
   testName,
   testImages,
   orgName,
+  requestId,
   school,
   grade,
   rollNo,
@@ -28,6 +29,7 @@ const getScanResult = async (
   testImages.map(image => {
     formData.append('testImages', image);
   });
+  formData.append('requestId', requestId);
 
   const result = await axios.post(url, formData, {
     headers: {
