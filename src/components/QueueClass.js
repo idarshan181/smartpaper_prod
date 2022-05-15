@@ -12,14 +12,13 @@ export class ImageQueue {
   grade;
   rollNo;
   subject;
+  requestArray;
 
   processedRequests = 0;
   totalRequests = undefined;
   scanRequests = [];
   constructor(
-    testName,
-    testImages,
-    orgName,
+    requestArray,
     school,
     grade,
     rollNo,
@@ -27,9 +26,8 @@ export class ImageQueue {
     successCallback,
     failureCallback
   ) {
-    this.images = testImages;
-    this.testName = testName;
-    this.orgName = orgName;
+    this.requestArray = requestArray;
+
     this.school = school;
     this.grade = grade;
     this.rollNo = rollNo;
@@ -39,17 +37,18 @@ export class ImageQueue {
   }
 
   start() {
-    this.totalRequests = this.images.length;
-    this.addToQueue(this.images);
+    this.totalRequests = this.requestArray.length;
+    this.addToQueue(this.requestArray);
   }
 
   addToQueue = () => {
-    this.images.forEach(image => {
+    this.requestArray.forEach(req => {
       this.scanRequests.push(
         getScanResult(
-          this.testName,
-          [image],
-          this.orgName,
+          req.testName,
+          [req.testImages],
+          req.orgName,
+          req.requestId,
           this.school,
           this.grade,
           this.rollNo,
@@ -57,7 +56,7 @@ export class ImageQueue {
         )
       );
     });
-    console.log('scan request array: - ', this.scanRequests);
+    // console.log('scan request array: - ', this.scanRequests);
 
     this.processParallel(this.scanRequests);
   };
