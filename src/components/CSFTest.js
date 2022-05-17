@@ -109,6 +109,7 @@ export default function CSFTest() {
         console.log(`original-${id}`, state.inputImage.current.height);
 
         await resizeFile(file).then(res => {
+          console.log("new size",res.size);
           const blob = URL.createObjectURL(res);
           console.log(`blob`, blob);
           setState(prevState => ({
