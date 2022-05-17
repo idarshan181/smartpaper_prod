@@ -17,6 +17,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { createRef, useMemo, useState } from 'react';
+import { useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 // import Resizer from 'react-image-file-resizer';
@@ -34,6 +35,7 @@ import CustomPaper from '@/styles/CustomPaper';
 import ImageViewer from '@/styles/ImageViewer';
 import TableStyles from '@/styles/TableStyles';
 
+import { test_page4_1 } from './Columns';
 import { ResetDialog } from './CustomDialog';
 import { Table } from './CustomTable';
 import ErrorImageComponent from './ErrorImageComponent';
@@ -43,91 +45,9 @@ import Loader from './Loader';
 import { ImageQueue } from './QueueClass';
 
 export default function CSFTest() {
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'No.',
-        id: 'row',
-        maxWidth: 50,
-        filterable: false,
-        Cell: row => {
-          return <div>{row.row.index + 1 + '.'}</div>;
-        },
-        style: {
-          fontSize: '13px'
-        }
-      },
-      {
-        Header: 'Correct',
-        accessor: row => row[0].count_correct,
-        collapse: true,
-        style: {
-          fontSize: '13px',
-          color: 'green'
-        }
-      },
-      {
-        Header: 'Incorrect',
-        accessor: row => row[0].count_incorrect,
-        collapse: true,
-        style: {
-          fontSize: '13px',
-          color: 'red'
-        }
-      },
-      {
-        Header: '% correct',
-        accessor: row => row[0].pct_correct_checked,
-        Cell: props => props.value + '%',
-        collapse: true,
-        style: {
-          // fontWeight: 'bolder',
-          fontSize: '13px',
-          width: '200px',
-          maxWidth: 400,
-          minWidth: 100
-        }
-      },
-      {
-        Header: 'Blank',
-        accessor: row => row[0].count_blank,
-        collapse: true,
-        style: {
-          fontSize: '13px',
-          maxWidth: 400,
-          minWidth: 80
-        }
-      },
-      {
-        Header: '% total correct',
-        collapse: true,
-        accessor: row => row[0].pct_correct_total,
-        Cell: props => props.value + '%',
-        style: {
-          fontSize: '13px',
-          width: '100px',
-          maxWidth: 400,
-          minWidth: 120
-        }
-      },
-      {
-        Header: 'Result Image',
-        accessor: row => row[1],
-        Cell: e => (
-          <a href={e.value} target="_blank" rel="noreferrer">
-            {`View Result`}
-          </a>
-        ),
-        style: {
-          fontSize: '13px',
-          maxWidth: 1000,
-          minWidth: 150
-        }
-      }
-    ],
-    []
-  );
-
+  // const columns = useMemo(() => DemoMCQ, []);
+  const columns = useMemo(() => test_page4_1, []);
+  const tempElement = useRef();
   const [state, setState] = useState({
     orgName: 'CSF',
     imageLabel: '',
@@ -140,6 +60,7 @@ export default function CSFTest() {
       message: ''
     },
     errorProps: [],
+    totalErrorImages: 0,
     resultFetched: false,
     studentResult: [],
     testImages: [],
@@ -155,7 +76,7 @@ export default function CSFTest() {
   });
   const { inputs, handleChange, resetForm, clearForm } = useForm({
     school: '',
-    testName: 'Demo MCQ 1',
+    testName: 'Demo MCQ 3',
     rollNo: '',
     grade: '',
     subject: ''
@@ -185,10 +106,11 @@ export default function CSFTest() {
       // Note:  Just to show it in the image component
       const fileList = Object.values(files);
       fileList.map(async (file, id) => {
-        // console.log(`original-${id}`, file);
+        console.log(`original-${id}`, state.inputImage.current.height);
+
         await resizeFile(file).then(res => {
-          // console.log(`using image resizer-${id}`, res);
           const blob = URL.createObjectURL(res);
+          console.log(`blob`, blob);
           setState(prevState => ({
             ...prevState,
             imageSource: [...prevState.imageSource, blob], //.blob
@@ -229,6 +151,8 @@ export default function CSFTest() {
       error: {
         message: ''
       },
+      errorProps: [],
+      totalErrorImages: 0,
       loading: false,
       loadingMessage: '',
       testResult: [],
@@ -240,7 +164,7 @@ export default function CSFTest() {
   const updateState = (res, requestNo) => {
     console.log(
       `Res from queue class - ${requestNo}`,
-      res,
+      res.data.data.rollNo,
       new Date().toLocaleTimeString('en-US')
     );
     // console.log('request array updateState: uno ', state.requestArray);
@@ -257,7 +181,11 @@ export default function CSFTest() {
       resultFetched: true,
       testResult: [
         ...prevState.testResult,
-        [...res.data.data.test_result, ...res.data.data.output_res]
+        [
+          ...res.data.data.test_result,
+          ...res.data.data.output_res,
+          res.data.data.rollNo
+        ]
       ],
       progressStatus: requestNo,
       totalImages: state.testImages.length
@@ -286,6 +214,7 @@ export default function CSFTest() {
       imageSource: [],
       isError: true,
       errorProps: [...prevState.errorProps, tempErrorProps],
+      totalErrorImages: prevState.totalErrorImages + 1,
       error: {
         message: err.response.data.detail.detail
       },
@@ -296,10 +225,6 @@ export default function CSFTest() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setState(prevState => ({
-      ...prevState,
-      requestArray: ''
-    }));
     const { testName, school, grade, rollNo, subject } = inputs;
     const { orgName, testImages, imageSource } = state;
     // console.log("testImage, imsource", state.imageSource, state.testImages)
@@ -319,6 +244,7 @@ export default function CSFTest() {
       requestArray: [...tempReqArray],
       isError: false,
       errorProps: [],
+      totalErrorImages: 0,
       isDisabled: true,
       isClearDisabled: true,
       loading: true,
@@ -375,13 +301,36 @@ export default function CSFTest() {
       ...prevState,
       open: true
     }));
-    console.log(state.errorProps);
+    console.log('test result', state.testResult);
   };
   const handleClose = () => {
     setState(prevState => ({
       ...prevState,
       open: false
     }));
+  };
+  const deleteErrorComponent = errorCompProp => {
+    // console.log('first delete error: ', errorCompProp, state.errorProps);
+    const temp = state.errorProps.filter(
+      errorProp => errorProp.errorId !== errorCompProp.requestId
+    );
+    const temp2 = state.errorProps.findIndex(
+      element => element.errorId === errorCompProp.requestId
+    );
+    state.errorProps.splice(temp2, 1);
+    // console.log('temp err prop', temp);
+    // console.log('temp2 err prop', temp2);
+    // console.log("new state", state.errorProps);
+    setState(prevState => ({
+      ...prevState,
+      errorProps: [...temp]
+    }));
+    if (temp.length < 1) {
+      setState(prevState => ({
+        ...prevState,
+        isError: false
+      }));
+    }
   };
   return (
     <Container
@@ -527,9 +476,9 @@ export default function CSFTest() {
                     layout="responsive"
                     objectFit="contain"
                     className="outputImage"
-                    onClick={() => {
-                      console.log('');
-                    }}
+                      onClick={() => {
+                        console.log('ref', state.inputImage);
+                      }}
                   />
                 ))
               )}
@@ -538,13 +487,14 @@ export default function CSFTest() {
           {state.isError && (
             <ImageViewer>
               <Typography variant="h5" textAlign="center">
-                Error Image
+                Error Image count: {`no. ${state.totalErrorImages}`}
               </Typography>
               {state.isError ? <ErrorMessage error={state.error} /> : null}
               {/* {errorComponent()} */}
               <ErrorImageComponent
                 requestArray={state.requestArray}
                 errorProps={state.errorProps}
+                deleteErrorImg={deleteErrorComponent}
               />
 
               {/* <Image
@@ -603,6 +553,7 @@ export default function CSFTest() {
                 type="file"
                 multiple
                 ref={state.inputImage}
+                // ref={tempElement}
                 aria-label="Select photo(s)"
                 onChange={handleFileChange}
               />
